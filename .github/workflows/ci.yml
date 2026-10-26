@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22.x, 24.x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - run: node scripts/smoke.mjs
+      - name: Size budget
+        run: pnpm size
+      - uses: actions/upload-artifact@v4
+        if: matrix.node == '24.x'
+        with:
+          name: dist
+          path: dist
+
+  runtimes:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.0
+      - name: Node 20.19 (minimum in engines)
+        run: node scripts/smoke.mjs
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Deno
+        run: deno run --allow-read scripts/smoke.mjs
+      - uses: oven-sh/setup-bun@v2
+      - name: Bun
+        run: bun scripts/smoke.mjs
+
+  package:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Install the tarball like a user would
+        run: |
+          npm pack --pack-destination /tmp
+          mkdir /tmp/consumer && cd /tmp/consumer
+          echo '{"type":"module","private":true}' > package.json
+          npm install /tmp/bareink-*.tgz
+          node -e "import('bareink').then(m => { if (!m.render) process.exit(1) })"
+          node -e "require('bareink')"
+          node --input-type=module -e "import { validate } from 'bareink/validate'; import { en } from 'bareink/locale/en'; if (!validate || !en.reasons) process.exit(1)"
