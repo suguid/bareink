@@ -60,6 +60,8 @@ export function frame(ctx: Ctx, height: number, ...kids: Child[]): Markup {
       role: 'img',
       'aria-label': ctx.ds.title,
       'font-family': FONT,
+      'font-size': 11,
+      fill: ctx.c('muted'),
       style: 'overflow:visible;max-width:100%;height:auto',
     },
     el('title', {}, ctx.ds.title),
@@ -85,26 +87,27 @@ export function hatches(ctx: Ctx, tokens: Token[]): Markup {
 export const hatch = (ctx: Ctx, t: Token): string => `url(#${ctx.id}${t})`
 
 export function text(ctx: Ctx, x: number, y: number, s: string, a: Record<string, string | number | undefined> = {}): Markup {
-  return el('text', { x, y, 'font-size': 11, fill: ctx.c('muted'), ...a }, s)
+  return el('text', { x, y, ...a }, s)
 }
+
+export const mark = (ctx: Ctx, x: number, y: number, s: string): Markup =>
+  text(ctx, x, y, s, { 'text-anchor': 'middle', fill: ctx.c('ink'), 'font-size': 11.5, 'font-weight': 600 })
+
+export const xLabel = (ctx: Ctx, x: number, y: number, s: string): Markup => text(ctx, x, y, s, { 'text-anchor': 'middle', fill: ctx.c('ink2') })
 
 export function hit(x: number, y: number, w: number, h: number, i: number, tip: string): Markup {
   return el('rect', { x, y, width: Math.max(w, 1), height: Math.max(h, 1), fill: 'transparent', tabindex: 0, 'data-i': i }, el('title', {}, tip))
 }
 
-export function yAxis(ctx: Ctx, y: Linear, x0: number, x1: number, fmt: (v: number) => string, baseAt: number): Markup {
-  return el(
-    'g',
-    {},
+export function yAxis(ctx: Ctx, y: Linear, x0: number, x1: number, fmt: (v: number) => string, baseAt: number): Child {
+  return [
     y.ticks(4).map((t) =>
-      el(
-        'g',
-        {},
+      [
         el('line', { x1: x0, x2: x1, y1: y(t), y2: y(t), stroke: ctx.c(t === baseAt ? 'base' : 'grid') }),
         text(ctx, x0 - 8, y(t) + 4, fmt(t), { 'text-anchor': 'end' }),
-      ),
+      ],
     ),
-  )
+  ]
 }
 
 export const axisRoom = (y: Linear, fmt: (v: number) => string): number =>
@@ -115,11 +118,9 @@ export function labelEvery(labels: string[], step: number): number {
   return Math.max(1, Math.ceil((widest + 8) / Math.max(step, 1)))
 }
 
-export function forecastBand(ctx: Ctx, x: number, y: number, w: number, h: number): Markup {
-  return el(
-    'g',
-    {},
+export function forecastBand(ctx: Ctx, x: number, y: number, w: number, h: number): Child {
+  return [
     el('rect', { x, y: y - 16, width: w, height: h + 16, fill: ctx.c('band') }),
     text(ctx, x + 6, y - 4, ctx.msg.forecast),
-  )
+  ]
 }

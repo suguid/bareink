@@ -11,36 +11,45 @@ export interface Formatter {
   signed: (unit: Unit, v: number) => string
 }
 
+const FORMATTERS = new Map<string, Formatter>()
+
 export function formatter({ locale = 'en-US', currency = 'USD' }: FormatOptions = {}): Formatter {
+  const key = locale + ' ' + currency
+  const hit = FORMATTERS.get(key)
+  if (hit) return hit
   const cache = new Map<string, Intl.NumberFormat>()
-  const nf = (id: string, o: Intl.NumberFormatOptions): Intl.NumberFormat => {
+  const nf = (style: string, sign: string, digits: number, compact?: 1): Intl.NumberFormat => {
+    const id = style + sign + digits + compact
     let f = cache.get(id)
-    if (!f) cache.set(id, (f = new Intl.NumberFormat(locale, o)))
+    if (!f)
+      cache.set(
+        id,
+        (f = new Intl.NumberFormat(locale, {
+          style,
+          currency,
+          signDisplay: sign,
+          maximumFractionDigits: digits,
+          notation: compact ? 'compact' : 'standard',
+        } as Intl.NumberFormatOptions)),
+      )
     return f
   }
-  const compact = (style: 'currency' | 'decimal', sign: 'auto' | 'exceptZero', digits: number) =>
-    nf(style + sign + digits, {
-      style,
-      currency,
-      notation: 'compact',
-      maximumFractionDigits: digits,
-      signDisplay: sign,
-    } as Intl.NumberFormatOptions)
-
   const make =
-    (sign: 'auto' | 'exceptZero', digits: number) =>
-    (unit: Unit, v: number): string => {
-      if (unit === 'currency') return compact('currency', sign, Math.abs(v) >= 1000 ? digits : 2).format(v)
-      if (unit === 'percent')
-        return nf('p' + sign + digits, { style: 'percent', maximumFractionDigits: digits, signDisplay: sign } as Intl.NumberFormatOptions).format(v / 100)
-      if (unit === 'count') return nf('c' + sign, { maximumFractionDigits: 0, signDisplay: sign } as Intl.NumberFormatOptions).format(v)
-      return compact('decimal', sign, digits).format(v)
-    }
-
-  const value = make('auto', 1)
-  const signed = make('exceptZero', 1)
-  const tick = (unit: Unit, v: number): string =>
-    unit === 'currency' ? compact('decimal', 'auto', 1).format(v) : unit === 'percent' ? value(unit, v) : compact('decimal', 'auto', 1).format(v)
-
-  return { value, tick, signed }
+    (sign: string) =>
+    (unit: Unit, v: number): string =>
+      unit === 'currency'
+        ? nf(unit, sign, Math.abs(v) >= 1000 ? 1 : 2, 1).format(v)
+        : unit === 'percent'
+          ? nf(unit, sign, 1).format(v / 100)
+          : unit === 'count'
+            ? nf('decimal', sign, 0).format(v)
+            : nf('decimal', sign, 1, 1).format(v)
+  const value = make('auto')
+  const f: Formatter = {
+    value,
+    signed: make('exceptZero'),
+    tick: (unit, v) => (unit === 'percent' ? value(unit, v) : value('number', v)),
+  }
+  FORMATTERS.set(key, f)
+  return f
 }

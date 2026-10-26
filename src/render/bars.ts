@@ -1,7 +1,7 @@
 import { frame, hit, text, type Ctx, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { linear } from '../scale.ts'
-import { el, rightRounded, textWidth, type Markup } from '../svg.ts'
+import { box, el, RIGHT, textWidth, type Markup } from '../svg.ts'
 
 interface Item {
   label: string
@@ -44,10 +44,8 @@ export function bars(ctx: Ctx): Markup {
       const top = m.t + i * rowH
       const by = narrow ? top + 22 : top + (rowH - barH) / 2
       const value = values[i]!
-      return el(
-        'g',
-        {},
-        el('path', { d: rightRounded(m.l, by, x(it.value) - m.l, barH, 4), fill: ctx.c(color(it)) }),
+      return [
+        el('path', { d: box(m.l, by, x(it.value) - m.l, barH, 4, RIGHT), fill: ctx.c(color(it)) }),
         narrow
           ? el('text', { x: 0, y: top + 15, 'font-size': 12.5, fill: ctx.c('ink') }, it.label, el('tspan', { dx: 8, fill: ctx.c('ink2') }, value))
           : [
@@ -55,14 +53,12 @@ export function bars(ctx: Ctx): Markup {
               text(ctx, x(it.value) + 8, by + barH / 2 + 4, value, { 'font-size': 12, fill: ctx.c('ink2') }),
             ],
         hit(0, top, W, rowH, i, `${it.label}\n${value}`),
-      )
+      ]
     }),
     ref &&
-      el(
-        'g',
-        {},
+      [
         el('line', { x1: x(ref.value), x2: x(ref.value), y1: m.t - 8, y2: H - m.b, stroke: ctx.c('ink2'), 'stroke-width': 1.5 }),
         text(ctx, x(ref.value), m.t - 12, ref.label, { 'text-anchor': x(ref.value) > W - 90 ? 'end' : 'middle', fill: ctx.c('ink2') }),
-      ),
+      ],
   )
 }

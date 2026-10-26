@@ -6,18 +6,20 @@ export type Child = Markup | string | number | false | null | undefined | Child[
 
 type Attr = string | number | boolean | null | undefined
 
-export const esc = (s: string | number): string =>
-  String(s).replace(/[&<>"']/g, (c) => '&#' + c.charCodeAt(0) + ';')
+const UNSAFE = /[&<>"']/
 
-const r2 = (v: number): string => String(Math.round(v * 100) / 100)
+export const esc = (v: string | number): string => {
+  const s = String(v)
+  return UNSAFE.test(s) ? s.replace(/[&<>"']/g, (c) => '&#' + c.charCodeAt(0) + ';') : s
+}
+
+export const p = (v: number): string => String(Math.round(v * 10) / 10)
 
 const flat = (kids: Child[]): string => {
   let s = ''
   for (const k of kids) {
     if (k == null || k === false) continue
-    if (Array.isArray(k)) s += flat(k)
-    else if (typeof k === 'object') s += k.h
-    else s += esc(k)
+    s += Array.isArray(k) ? flat(k) : typeof k === 'object' ? k.h : esc(k)
   }
   return s
 }
@@ -27,34 +29,26 @@ export function el(tag: string, attrs: Record<string, Attr>, ...kids: Child[]): 
   for (const k in attrs) {
     const v = attrs[k]
     if (v == null || v === false) continue
-    s += ' ' + k + '="' + (typeof v === 'number' ? r2(v) : esc(v === true ? '' : v)) + '"'
+    s += ' ' + k + '="' + (typeof v === 'number' ? p(v) : v === true ? '' : esc(v)) + '"'
   }
   const inner = flat(kids)
   return { h: s + (inner ? '>' + inner + '</' + tag + '>' : '/>') }
 }
 
-export const p = (n: number): string => r2(n)
+export const TOP = 3
+export const RIGHT = 6
+export const BOTTOM = 12
 
-export function topRounded(x: number, y: number, w: number, h: number, r: number): string {
-  if (h <= 0 || w <= 0) return ''
-  r = Math.min(r, w / 2, h)
-  return `M${p(x)},${p(y + h)}V${p(y + r)}Q${p(x)},${p(y)} ${p(x + r)},${p(y)}H${p(x + w - r)}Q${p(x + w)},${p(y)} ${p(x + w)},${p(y + r)}V${p(y + h)}Z`
-}
-
-export function bottomRounded(x: number, y: number, w: number, h: number, r: number): string {
-  if (h <= 0 || w <= 0) return ''
-  r = Math.min(r, w / 2, h)
-  return `M${p(x)},${p(y)}H${p(x + w)}V${p(y + h - r)}Q${p(x + w)},${p(y + h)} ${p(x + w - r)},${p(y + h)}H${p(x + r)}Q${p(x)},${p(y + h)} ${p(x)},${p(y + h - r)}Z`
-}
-
-export function rightRounded(x: number, y: number, w: number, h: number, r: number): string {
+export function box(x: number, y: number, w: number, h: number, r = 0, corners = 0): string {
   if (w <= 0 || h <= 0) return ''
-  r = Math.min(r, h / 2, w)
-  return `M${p(x)},${p(y)}H${p(x + w - r)}Q${p(x + w)},${p(y)} ${p(x + w)},${p(y + r)}V${p(y + h - r)}Q${p(x + w)},${p(y + h)} ${p(x + w - r)},${p(y + h)}H${p(x)}Z`
+  r = Math.min(r, w / 2, h / 2)
+  const [a, b, c, d] = [1, 2, 4, 8].map((bit) => (corners & bit ? r : 0)) as [number, number, number, number]
+  const q = (cx: number, cy: number, ex: number, ey: number, k: number) => (k ? `Q${p(cx)},${p(cy)} ${p(ex)},${p(ey)}` : '')
+  return (
+    `M${p(x + a)},${p(y)}H${p(x + w - b)}${q(x + w, y, x + w, y + b, b)}V${p(y + h - c)}${q(x + w, y + h, x + w - c, y + h, c)}` +
+    `H${p(x + d)}${q(x, y + h, x, y + h - d, d)}V${p(y + a)}${q(x, y, x + a, y, a)}Z`
+  )
 }
-
-export const rect = (x: number, y: number, w: number, h: number): string =>
-  w > 0 && h > 0 ? `M${p(x)},${p(y)}h${p(w)}v${p(h)}h${p(-w)}Z` : ''
 
 export const polyline = (pts: [number, number][]): string =>
   pts.map(([x, y], i) => (i ? 'L' : 'M') + p(x) + ',' + p(y)).join('')

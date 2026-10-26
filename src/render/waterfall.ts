@@ -1,7 +1,7 @@
-import { axisRoom, frame, hit, text, yAxis, type Ctx, type Token } from '../context.ts'
+import { axisRoom, frame, hit, mark, yAxis, type Ctx, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { band, linear, nice } from '../scale.ts'
-import { el, rect, topRounded, type Markup } from '../svg.ts'
+import { box, el, TOP, type Markup } from '../svg.ts'
 
 export function waterfall(ctx: Ctx): Markup {
   const { ds, width: W, fmt } = ctx
@@ -45,19 +45,17 @@ export function waterfall(ctx: Ctx): Markup {
       const h = y(s.lo) - top
       const value = s.isTotal ? fmt.value(unit, s.v) : fmt.signed(unit, s.v)
       const next = steps[i + 1]
-      return el(
-        'g',
-        {},
-        el('path', { d: s.isTotal ? topRounded(bx, top, bw, h, 4) : rect(bx, top, bw, Math.max(h, 1)), fill: ctx.c(s.color) }),
+      return [
+        el('path', { d: s.isTotal ? box(bx, top, bw, h, 4, TOP) : box(bx, top, bw, Math.max(h, 1)), fill: ctx.c(s.color) }),
         next && el('line', { x1: bx + bw, x2: x(i + 1), y1: y(s.level), y2: y(s.level), stroke: ctx.c('base') }),
-        text(ctx, bx + bw / 2, top - 7, value, { 'text-anchor': 'middle', fill: ctx.c('ink'), 'font-size': 11.5, 'font-weight': 600 }),
+        mark(ctx, bx + bw / 2, top - 7, value),
         el(
           'text',
           { x: bx + bw / 2, y: H - m.b + 16, 'font-size': 11.5, fill: ctx.c('ink2'), 'text-anchor': 'middle' },
           words(s.label).map((w, k) => el('tspan', { x: bx + bw / 2, dy: k ? 13 : 0 }, w)),
         ),
         hit(bx - (x.step - bw) / 2, m.t, x.step, H - m.b - m.t, i, `${s.label}\n${value}`),
-      )
+      ]
     }),
   )
 }

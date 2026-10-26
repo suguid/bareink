@@ -3,7 +3,6 @@ import { formatter, type FormatOptions } from './format.ts'
 import { en } from './messages.ts'
 import { bars } from './render/bars.ts'
 import { columns } from './render/columns.ts'
-import { diverging } from './render/diverging.ts'
 import { line } from './render/line.ts'
 import { share } from './render/share.ts'
 import { kpi, table } from './render/table.ts'
@@ -25,7 +24,7 @@ export interface Rendered extends Decision {
   notes: string[]
 }
 
-const RENDERERS: Record<Form, (ctx: Ctx) => Markup> = { columns, bars, line, diverging, waterfall, share, kpi, table }
+const RENDERERS: Record<Form, (ctx: Ctx) => Markup> = { columns: (c) => columns(c), diverging: (c) => columns(c, true), bars, line, waterfall, share, kpi, table }
 
 const hash = (s: string): string => {
   let h = 5381

@@ -64,3 +64,18 @@ test('kpi renders values as cards', () => {
   const { markup } = render(runway)
   assert.match(markup, /\$41\.4K/)
 })
+
+test('cumulative share labels do not overlap on narrow widths', () => {
+  const { markup } = render(people, { width: 320 })
+  const labels = [...markup.matchAll(/<text x="([\d.]+)" y="([\d.]+)"[^>]*font-weight="600">([^<]+)</g)].map((m) => ({ x: +m[1]!, y: +m[2]!, w: m[3]!.length * 6.7 }))
+  for (let i = 1; i < labels.length; i++) {
+    const a = labels[i - 1]!
+    const b = labels[i]!
+    assert.ok(a.y !== b.y || b.x - b.w / 2 >= a.x + a.w / 2, `labels ${i - 1} and ${i} overlap`)
+  }
+})
+
+test('negative columns grow down from zero', () => {
+  const { markup } = render(result)
+  assert.match(markup, /fill="var\(--bi-s2,#eb6834\)"/)
+})
