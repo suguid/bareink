@@ -120,6 +120,21 @@ They are not configurable. That is the point.
 
 `code` is stable across versions; build on it. `reason` is the human sentence for that code, present only when you pass a locale.
 
+### Why did I get a table?
+
+Because a chart would have misled. Every result carries a `code`; look it up above, or pass a locale to read the sentence. The usual ones:
+
+| Code | What to do |
+|---|---|
+| `too-few-periods` | Two periods are a comparison, not a trend. Add periods, or keep the table. |
+| `mixed-units` | Money and people on one chart needs two axes. Render two datasets. |
+| `category-flat` | The values really are about equal; the table says so honestly. |
+| `missing-values` | A category or stage without a value cannot be ranked. Fill it in or leave the row out. |
+| `not-a-whole` | Parts of a whole need a single `percent` measure adding up to 100 or less. |
+| `negative-series` | Several series that go below zero would overlap. Render one at a time. |
+
+When the data comes from a user or a model, `validate` explains what is wrong with the input itself.
+
 ## API
 
 ```ts
@@ -134,7 +149,9 @@ validate(dataset)                  // string[]: readable errors, empty when vali
 cssVariables(palette, selector?)   // CSS custom properties for a theme
 ```
 
-Options: `width` (default 640), `locale` and `currency` (passed to `Intl.NumberFormat`), `messages` (a locale), `palette`, `inlineColors`, `id` (prefix for the hatch patterns; set it when one page shows charts with different inline palettes).
+Options: `width` (default 640), `messages` (a locale: words, reasons and number formatting in one import), `locale` and `currency` (override the locale's own, passed to `Intl.NumberFormat`), `palette`, `inlineColors`, `id` (prefix for the hatch patterns; set it when one page shows charts with different inline palettes).
+
+Every public type is documented, so your editor explains `nature`, `unit` and `kind` where you type them.
 
 `render` trusts its input; call `validate` first when the dataset comes from a user or a model.
 
@@ -155,6 +172,82 @@ The full contract, with descriptions written for language models, is [`schema.js
 | `highlight`, `muted`, `uncertain`, `totalRows` | row indexes for direct labels, grey bars, hatched parts, waterfall totals |
 
 Dates are never parsed: dimension values are the labels you pass. Use `null` for a missing value, never 0.
+
+## In your framework
+
+`markup` is a string, and every piece of text in it is escaped, so it can go straight into the page. Pass the container's width so the layout fits; the SVG also scales down on its own.
+
+**React**
+
+```jsx
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { render } from 'bareink'
+import { en } from 'bareink/locale/en'
+
+export function Chart({ dataset }) {
+  const ref = useRef(null)
+  const [width, setWidth] = useState(0)
+  useLayoutEffect(() => {
+    const ro = new ResizeObserver(([e]) => setWidth(Math.round(e.contentRect.width)))
+    ro.observe(ref.current)
+    return () => ro.disconnect()
+  }, [])
+  const { markup } = useMemo(() => render(dataset, { width: width || 640, messages: en }), [dataset, width])
+  return <div ref={ref} dangerouslySetInnerHTML={{ __html: markup }} />
+}
+```
+
+**Vue**
+
+```vue
+<script setup>
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { render } from 'bareink'
+import { en } from 'bareink/locale/en'
+
+const props = defineProps({ dataset: Object })
+const el = ref(null)
+const width = ref(640)
+let ro
+onMounted(() => {
+  ro = new ResizeObserver(([e]) => (width.value = Math.round(e.contentRect.width)))
+  ro.observe(el.value)
+})
+onBeforeUnmount(() => ro?.disconnect())
+const markup = computed(() => render(props.dataset, { width: width.value, messages: en }).markup)
+</script>
+
+<template><div ref="el" v-html="markup" /></template>
+```
+
+**Svelte**
+
+```svelte
+<script>
+  import { render } from 'bareink'
+  import { en } from 'bareink/locale/en'
+
+  let { dataset } = $props()
+  let width = $state(0)
+  const markup = $derived(render(dataset, { width: width || 640, messages: en }).markup)
+</script>
+
+<div bind:clientWidth={width}>{@html markup}</div>
+```
+
+**On a server** (Node, Deno, Bun, edge workers)
+
+```js
+import { render } from 'bareink'
+
+export function chartResponse(dataset) {
+  const { form, markup } = render(dataset, { width: 640, inlineColors: true })
+  const svg = form !== 'table' && form !== 'kpi'
+  return new Response(markup, { headers: { 'content-type': svg ? 'image/svg+xml' : 'text/html; charset=utf-8' } })
+}
+```
+
+Tables and number cards come back as HTML, so check `form` before serving the result as an image.
 
 ## With a language model
 

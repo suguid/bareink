@@ -8,7 +8,8 @@
 - `render(dataset, { width, messages, locale, currency })` returns `{ form, code, reason, markup, notes }`. `markup` is an SVG string for charts, HTML for tables and number cards.
 - `validate(dataset)` from `bareink/validate` returns readable errors; call it before `render` on model output and send the errors back to the model.
 - `route(dataset)` from `bareink/route` returns only the decision.
-- `reason` is empty unless a locale is passed: `en` from `bareink/locale/en`, `ptBR` from `bareink/locale/pt-BR`.
+- `reason` is empty unless a locale is passed: `en` from `bareink/locale/en`, `ptBR` from `bareink/locale/pt-BR`. A locale also sets number formatting (`ptBR` gives pt-BR numbers in BRL); `locale` and `currency` options override it.
+- `markup` is escaped and safe to insert as HTML. Tables and number cards are HTML, charts are SVG: check `form` before serving it as an image.
 - `schema.json` (also `bareink/schema.json`) is the dataset contract with descriptions for models. Use it as a tool's input schema.
 
 ## Dataset in one example
