@@ -1,4 +1,4 @@
-import { frame, hatch, hatches, hit, text, lab, type Ctx, type Token } from '../context.ts'
+import { frame, hatch, hatches, hit, legend, text, lab, type Ctx, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { linear } from '../scale.ts'
 import { el, textWidth, type Markup } from '../svg.ts'
@@ -32,7 +32,11 @@ export function share(ctx: Ctx): Markup {
     }
     return { label, row }
   })
-  const by = marks.some((mk) => mk.row === 1) ? 44 : 28
+  const [key, kh] = legend(
+    ctx,
+    parts.map((p) => ({ label: `${p.label} ${fmt.value('percent', p.v)}`, t: p.hatched ? 's1' : p.t, hatched: p.hatched })),
+  )
+  const by = kh + (marks.some((mk) => mk.row === 1) ? 44 : 28)
   const H = by + 48
   let acc = 0
 
@@ -40,6 +44,7 @@ export function share(ctx: Ctx): Markup {
     ctx,
     H,
     hatches(ctx, ['s1', 's2']),
+    key,
     parts.map((p, i) => {
       const x0 = x(acc) + (i ? 1 : 0)
       const w = x(p.v) - x(0) - (i ? 2 : 0) - (i < parts.length - 1 ? 1 : 0)

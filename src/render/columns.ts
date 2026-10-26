@@ -1,4 +1,4 @@
-import { axisRoom, forecastBand, frame, hatch, hatches, hit, labelEvery, mark, SERIES, text, xLabel, yAxis, lab, type Ctx, type Token } from '../context.ts'
+import { axisRoom, forecastBand, frame, hatch, hatches, hit, labelEvery, legend, mark, SERIES, text, xLabel, yAxis, lab, type Ctx, type Key, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { band, linear, nice } from '../scale.ts'
 import { BOTTOM, box, el, TOP, type Markup } from '../svg.ts'
@@ -9,13 +9,16 @@ export function columns(ctx: Ctx, signed = false): Markup {
   const ms = ds.measures
   const rows = ds.rows
   const unit = ms[0]!.unit
-  const H = signed ? 230 : 250
+  const keys: Key[] = signed || ms.length < 2 ? [] : ms.map((mm, j) => ({ label: mm.label, t: SERIES[j]! }))
+  if (ms.some((mm) => mm.openKey && rows.some((r) => num(r[mm.openKey!]) > 0))) keys.push({ label: msg.open, t: 's1', hatched: true })
+  const [key, kh] = legend(ctx, keys)
+  const H = (signed ? 230 : 250) + kh
   const show = signed ? fmt.signed : fmt.value
   const total = (r: Row, m: Measure) => num(r[m.key]) + (m.openKey ? num(r[m.openKey]) : 0)
   const ext = Math.max(0, ...rows.flatMap((r) => ms.map((m) => Math.abs(total(r, m)))), ds.reference?.value ?? 0)
   const tick = (v: number) => (signed && v ? fmt.signed(unit, v) : fmt.tick(unit, v))
   const probe = linear(nice(signed ? -ext : 0, ext, 4), [0, 1])
-  const m = { t: signed ? 24 : 22, r: 8, b: 28, l: axisRoom(probe, tick) }
+  const m = { t: (signed ? 24 : 22) + kh, r: 8, b: 28, l: axisRoom(probe, tick) }
   const y = linear(probe.domain, [H - m.b, m.t])
   const x = band(rows.length, [m.l, W - m.r], signed ? 0.38 : 0.28, signed ? 0.2 : 0.14)
   const inner = band(ms.length, [0, x.bandwidth], ms.length > 1 ? 0.08 : 0, 0)
@@ -31,6 +34,7 @@ export function columns(ctx: Ctx, signed = false): Markup {
     ctx,
     H,
     hatches(ctx, signed ? ['s1', 's2'] : SERIES.slice(0, ms.length)),
+    key,
     ff != null && ff < rows.length && forecastBand(ctx, x(ff) - gap, m.t, W - m.r - x(ff) + gap, H - m.b - m.t),
     yAxis(ctx, y, m.l, W - m.r, tick, 0),
     rows.map((r, i) => {

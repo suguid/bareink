@@ -90,3 +90,21 @@ test('negative columns grow down from zero', () => {
   const { markup } = render(result)
   assert.match(markup, /fill="var\(--bi-s2,#eb6834\)"/)
 })
+
+const visible = (svg: string) => svg.replace(/<title>[\s\S]*?<\/title>/g, '')
+
+test('multi-series columns name each series in a legend', () => {
+  const m = visible(render(cashflow).markup)
+  assert.match(m, />Inflows</)
+  assert.match(m, />Outflows</)
+  assert.match(m, />open</)
+})
+
+test('share names every part, not only the cumulative marks', () => {
+  const m = visible(render(people).markup)
+  for (const part of ['Staff', 'Owners', 'Contractors', 'Rest']) assert.match(m, new RegExp('>' + part + ' '))
+})
+
+test('a single-series chart has no legend', () => {
+  assert.doesNotMatch(visible(render(ticket).markup), /<rect[^>]*width="10" height="10"/)
+})

@@ -119,3 +119,28 @@ export function labelEvery(labels: string[], step: number): number {
 export function forecastBand(ctx: Ctx, x: number, y: number, w: number, h: number): Child {
   return [el('rect', { x, y: y - 16, width: w, height: h + 16, fill: ctx.c('band') }), text(x + 6, y - 4, ctx.msg.forecast)]
 }
+
+export interface Key {
+  label: string
+  t: Token
+  hatched?: boolean
+}
+
+export function legend(ctx: Ctx, keys: Key[]): [Child, number] {
+  let x = 0
+  let y = 0
+  const out = keys.map((k) => {
+    const w = 15 + textWidth(k.label, 12)
+    if (x && x + w > ctx.width) {
+      x = 0
+      y += 18
+    }
+    const at = x
+    x += w + 16
+    return [
+      el('rect', { x: at, y: y + 2, width: 10, height: 10, rx: 2, fill: k.hatched ? hatch(ctx, k.t) : ctx.c(k.t), stroke: k.hatched ? ctx.c(k.t) : undefined }),
+      text(at + 15, y + 11, k.label, { 'font-size': 12, fill: ctx.c('ink2') }),
+    ]
+  })
+  return [keys.length ? out : null, keys.length ? y + 26 : 0]
+}
