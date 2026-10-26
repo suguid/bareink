@@ -26,6 +26,64 @@ reason  // 'A volume per period (inflows, outflows, revenue): columns from zero.
 markup  // '<svg ...>'
 ```
 
+## Showcase
+
+Every chart below is a plain SVG string from `render()`, written to a file by [`examples/readme.ts`](examples/readme.ts). No browser was involved.
+
+<!-- showcase:start -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/columns-dark.svg">
+  <img alt="Inflows and outflows move together, near $40k a month" src="docs/img/columns-light.svg" width="640">
+</picture>
+
+**`columns`**: A volume per period: columns from zero.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/diverging-dark.svg">
+  <img alt="March carried the year" src="docs/img/diverging-light.svg" width="640">
+</picture>
+
+**`diverging`**: Mixed signs over time: the sign matters more than the size.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/bars-dark.svg">
+  <img alt="Three categories take 71% of outflows" src="docs/img/bars-light.svg" width="640">
+</picture>
+
+**`bars`**: Categories: bars, largest first.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/line-dark.svg">
+  <img alt="Average ticket rose 16% in six months" src="docs/img/line-light.svg" width="640">
+</picture>
+
+**`line`**: A level over time: line.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/waterfall-dark.svg">
+  <img alt="Of every $100 in, $10 is operating result" src="docs/img/waterfall-light.svg" width="640">
+</picture>
+
+**`waterfall`**: Steps from a total to a result: waterfall.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/share-dark.svg">
+  <img alt="People take 29% of revenue, 43% with owners" src="docs/img/share-light.svg" width="640">
+</picture>
+
+**`share`**: Up to 4 parts of a whole: one 0–100% bar, never a pie.
+
+### When the router says no
+
+| Asked for | Router says |
+|---|---|
+| September vs October | **table**: Under 3 periods show no trend: table. |
+| Revenue and customers | **table**: Different units would need two axes: table. |
+| Three offices cost the same | **table**: Nearly equal values would draw equal bars: table. |
+| Yearly site renewals | **table**: A list of items, not a series: table. |
+| Cash today | **kpi**: One row: numbers read better as cards. |
+<!-- showcase:end -->
+
 ## Why
 
 Most chart libraries will draw whatever you ask for. When the one asking is an LLM, or someone in a hurry, that means pies with slices nobody can compare, dual axes that invent a relationship, and two columns posing as a trend.
