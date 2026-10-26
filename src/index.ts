@@ -42,6 +42,7 @@ const hash = (s: string): string => {
 }
 
 function context(ds: Dataset, o: RenderOptions): Ctx {
+  const ff = ds.forecastFrom
   const pal = { ...light, ...o.palette }
   return {
     ds,
@@ -49,6 +50,7 @@ function context(ds: Dataset, o: RenderOptions): Ctx {
     fmt: formatter(o),
     msg: o.messages ?? labels,
     id: o.id ?? 'bi' + hash(ds.title),
+    ff: ff != null && ff >= 0 && ff < ds.rows.length ? ff : undefined,
     c: (t: Token) => (o.inlineColors ? pal[t] : `var(--bi-${t},${pal[t]})`),
     notes: [],
   }

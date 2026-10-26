@@ -8,6 +8,7 @@ export const ptBR: Messages = {
     'too-many-series': 'Mais de 3 séries: tabela.',
     'flow-stages': 'Etapas de um total até um resultado: cascata.',
     'share-few': 'Até 4 partes de um todo: uma barra de 0 a 100%, nunca pizza.',
+    'not-a-whole': 'As partes somam mais de 100%: tabela.',
     'share-many': 'Mais de 4 partes de um todo: barras ordenadas.',
     'too-few-periods': 'Menos de 3 períodos não mostram tendência: tabela.',
     'signed-mixed': 'Valores abaixo de zero no tempo: o sinal importa tanto quanto o tamanho.',

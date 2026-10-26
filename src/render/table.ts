@@ -41,7 +41,7 @@ export function table(ctx: Ctx): Markup {
             el(
               'th',
               { scope: 'row', style: pad + 'left;font-weight:400' },
-              lab(ctx, r) + (ds.forecastFrom != null && i >= ds.forecastFrom ? ` (${msg.forecast})` : ''),
+              lab(ctx, r) + (ctx.ff != null && i >= ctx.ff ? ` (${msg.forecast})` : ''),
             ),
             ds.measures.map((m) => el('td', { style: pad + 'right' }, cell(ctx, r, m))),
           ),

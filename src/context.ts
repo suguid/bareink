@@ -1,5 +1,5 @@
 import type { Formatter } from './format.ts'
-import { el, p, textWidth, type Child, type Markup } from './svg.ts'
+import { el, fit, p, textWidth, type Child, type Markup } from './svg.ts'
 import type { Linear } from './scale.ts'
 import type { Dataset, Messages, Row } from './types.ts'
 
@@ -42,6 +42,7 @@ export interface Ctx {
   fmt: Formatter
   msg: Messages
   id: string
+  ff?: number
   c: (t: Token) => string
   notes: string[]
 }
@@ -94,7 +95,11 @@ export function text(x: number, y: number, s: string, a: Record<string, string |
 export const mark = (ctx: Ctx, x: number, y: number, s: string): Markup =>
   text(x, y, s, { 'text-anchor': 'middle', fill: ctx.c('ink'), 'font-size': 11.5, 'font-weight': 600 })
 
-export const xLabel = (ctx: Ctx, x: number, y: number, s: string): Markup => text(x, y, s, { 'text-anchor': 'middle', fill: ctx.c('ink2') })
+export function xLabel(ctx: Ctx, x: number, y: number, s: string, room: number): Markup {
+  s = fit(s, room, 11)
+  const half = textWidth(s, 11) / 2
+  return text(Math.min(Math.max(x, half), ctx.width - half), y, s, { 'text-anchor': 'middle', fill: ctx.c('ink2') })
+}
 
 export function hit(x: number, y: number, w: number, h: number, i: number, tip: string): Markup {
   return el('rect', { x, y, width: Math.max(w, 1), height: Math.max(h, 1), fill: 'transparent', tabindex: 0, 'data-i': i }, el('title', {}, tip))
@@ -117,7 +122,7 @@ export function labelEvery(labels: string[], step: number): number {
 }
 
 export function forecastBand(ctx: Ctx, x: number, y: number, w: number, h: number): Child {
-  return [el('rect', { x, y: y - 16, width: w, height: h + 16, fill: ctx.c('band') }), text(x + 6, y - 4, ctx.msg.forecast)]
+  return [el('rect', { x, y: y - 16, width: w, height: h + 16, fill: ctx.c('band') }), text(x + w - 6, y - 4, ctx.msg.forecast, { 'text-anchor': 'end' })]
 }
 
 export interface Key {
@@ -130,7 +135,8 @@ export function legend(ctx: Ctx, keys: Key[]): [Child, number] {
   let x = 0
   let y = 0
   const out = keys.map((k) => {
-    const w = 15 + textWidth(k.label, 12)
+    const label = fit(k.label, ctx.width - 15, 12)
+    const w = 15 + textWidth(label, 12)
     if (x && x + w > ctx.width) {
       x = 0
       y += 18
@@ -139,7 +145,7 @@ export function legend(ctx: Ctx, keys: Key[]): [Child, number] {
     x += w + 16
     return [
       el('rect', { x: at, y: y + 2, width: 10, height: 10, rx: 2, fill: k.hatched ? hatch(ctx, k.t) : ctx.c(k.t), stroke: k.hatched ? ctx.c(k.t) : undefined }),
-      text(at + 15, y + 11, k.label, { 'font-size': 12, fill: ctx.c('ink2') }),
+      text(at + 15, y + 11, label, { 'font-size': 12, fill: ctx.c('ink2') }),
     ]
   })
   return [keys.length ? out : null, keys.length ? y + 26 : 0]

@@ -23,7 +23,7 @@ export function columns(ctx: Ctx, signed = false): Markup {
   const x = band(rows.length, [m.l, W - m.r], signed ? 0.38 : 0.28, signed ? 0.2 : 0.14)
   const inner = band(ms.length, [0, x.bandwidth], ms.length > 1 ? 0.08 : 0, 0)
   const gap = (x.step - x.bandwidth) / 2
-  const ff = ds.forecastFrom
+  const ff = ctx.ff
   const every = labelEvery(
     rows.map((r) => lab(ctx, r)),
     x.step,
@@ -35,7 +35,7 @@ export function columns(ctx: Ctx, signed = false): Markup {
     H,
     hatches(ctx, signed ? ['s1', 's2'] : SERIES.slice(0, ms.length)),
     key,
-    ff != null && ff < rows.length && forecastBand(ctx, x(ff) - gap, m.t, W - m.r - x(ff) + gap, H - m.b - m.t),
+    ff != null && forecastBand(ctx, x(ff) - gap, m.t, W - m.r - x(ff) + gap, H - m.b - m.t),
     yAxis(ctx, y, m.l, W - m.r, tick, 0),
     rows.map((r, i) => {
       const isFc = ff != null && i >= ff
@@ -71,7 +71,7 @@ export function columns(ctx: Ctx, signed = false): Markup {
             open > 0 && el('path', { d: box(bx, yTop, bw, yBase - yTop - (base > 0 ? 2 : 0), 4, TOP), fill: hatch(ctx, t), stroke: ctx.c(t) }),
           ]
         }),
-        i % every === 0 && xLabel(ctx, cx, H - 8, label),
+        i % every === 0 && xLabel(ctx, cx, H - 8, label, x.step * every - 4),
         ds.highlight?.includes(i) && ms.length === 1 && mark(ctx, cx, top < 0 ? y(top) + 15 : y(top) - 7, show(unit, top)),
         hit(x(i) - gap, m.t, x.step, H - m.b - m.t, i, tip),
       ]

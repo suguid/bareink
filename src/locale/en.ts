@@ -10,6 +10,7 @@ export const en: Messages = {
     'too-many-series': 'More than 3 series: table.',
     'flow-stages': 'Steps from a total to a result: waterfall.',
     'share-few': 'Up to 4 parts of a whole: one 0–100% bar, never a pie.',
+    'not-a-whole': 'Parts add up to more than 100%: table.',
     'share-many': 'More than 4 parts of a whole: sorted bars.',
     'too-few-periods': 'Under 3 periods show no trend: table.',
     'signed-mixed': 'Values below zero over time: the sign matters as much as the size.',

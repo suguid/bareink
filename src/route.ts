@@ -13,7 +13,11 @@ export function route(ds: Dataset, messages?: Messages): Decision {
   if (ms.length > 3) return decide('table', 'too-many-series')
   if (dim.kind === 'stage' && ds.intent === 'flow') return decide('waterfall', 'flow-stages')
   const negative = ms.some((m) => rows.some((r) => num(r[m.key]) < 0))
-  if (ds.partOfWhole) return negative ? decide('table', 'category-negative') : rows.length <= 4 ? decide('share', 'share-few') : decide('bars', 'share-many')
+  if (ds.partOfWhole) {
+    if (negative) return decide('table', 'category-negative')
+    if (rows.reduce((s, r) => s + num(r[ms[0]!.key]), 0) > 100.5) return decide('table', 'not-a-whole')
+    return rows.length <= 4 ? decide('share', 'share-few') : decide('bars', 'share-many')
+  }
 
   if (dim.kind === 'time') {
     if (rows.length < 3) return decide('table', 'too-few-periods')

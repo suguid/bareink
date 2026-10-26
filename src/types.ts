@@ -58,6 +58,7 @@ export type ReasonCode =
   | 'flow-stages'
   | 'share-few'
   | 'share-many'
+  | 'not-a-whole'
   | 'too-few-periods'
   | 'signed-mixed'
   | 'negative-series'

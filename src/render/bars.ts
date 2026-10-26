@@ -1,7 +1,7 @@
 import { frame, hit, text, lab, type Ctx, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { linear } from '../scale.ts'
-import { box, el, RIGHT, textWidth, type Markup } from '../svg.ts'
+import { box, el, RIGHT, fit, textWidth, type Markup } from '../svg.ts'
 
 interface Item {
   label: string
@@ -46,9 +46,9 @@ export function bars(ctx: Ctx): Markup {
       return [
         el('path', { d: box(m.l, by, x(it.value) - m.l, barH, 4, RIGHT), fill: ctx.c(color(it)) }),
         narrow
-          ? el('text', { x: 0, y: top + 15, 'font-size': 12.5, fill: ctx.c('ink') }, it.label, el('tspan', { dx: 8, fill: ctx.c('ink2') }, value))
+          ? el('text', { x: 0, y: top + 15, 'font-size': 12.5, fill: ctx.c('ink') }, fit(it.label, W - textWidth(value, 12.5) - 10, 12.5), el('tspan', { dx: 8, fill: ctx.c('ink2') }, value))
           : [
-              text(m.l - 10, by + barH / 2 + 4, it.label, { 'text-anchor': 'end', 'font-size': 12.5, fill: ctx.c('ink') }),
+              text(m.l - 10, by + barH / 2 + 4, fit(it.label, m.l - 12, 12.5), { 'text-anchor': 'end', 'font-size': 12.5, fill: ctx.c('ink') }),
               text(x(it.value) + 8, by + barH / 2 + 4, value, { 'font-size': 12, fill: ctx.c('ink2') }),
             ],
         hit(0, top, W, rowH, i, `${it.label}\n${value}`),

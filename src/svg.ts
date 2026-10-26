@@ -53,3 +53,8 @@ export function box(x: number, y: number, w: number, h: number, r = 0, corners =
 export const polyline = (pts: [number, number][]): string => pts.map(([x, y], i) => (i ? 'L' : 'M') + p(x) + ',' + p(y)).join('')
 
 export const textWidth = (s: string, size: number): number => s.length * size * 0.56
+
+export const fit = (s: string, px: number, size: number): string => {
+  const max = Math.floor(px / (size * 0.56))
+  return s.length <= max ? s : max > 1 ? s.slice(0, max - 1) + '…' : ''
+}
