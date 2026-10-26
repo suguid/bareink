@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "bareink dataset",
+  "description": "Numbers described by what they mean. bareink picks the chart (or a table, or number cards) from this description; never pick a chart type yourself. Put the measures' values in rows, one object per period, category or item.",
+  "type": "object",
+  "required": ["title", "dimension", "measures", "rows"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The takeaway as a sentence, e.g. 'Three categories take 71% of outflows'. Used as the accessible name of the chart."
+    },
+    "dimension": {
+      "type": "object",
+      "required": ["key", "label", "kind"],
+      "additionalProperties": false,
+      "description": "What each row is.",
+      "properties": {
+        "key": { "type": "string", "minLength": 1, "description": "Field in each row that holds the row's label, e.g. 'month'." },
+        "label": { "type": "string", "minLength": 1, "description": "Human name of the dimension, e.g. 'Month'." },
+        "kind": {
+          "enum": ["time", "category", "stage", "record"],
+          "description": "time: ordered periods (months, weeks, years), oldest first. category: things to compare (expense categories, products, regions). stage: steps from a total to a result, such as revenue minus costs to profit, with deductions as negative numbers. record: a list of individual items such as invoices or transactions."
+        }
+      }
+    },
+    "measures": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The numbers in each row. More than 3, or measures in different units, become a table.",
+      "items": {
+        "type": "object",
+        "required": ["key", "label", "unit"],
+        "additionalProperties": false,
+        "properties": {
+          "key": { "type": "string", "minLength": 1, "description": "Field in each row that holds this number. Unique, and different from dimension.key." },
+          "label": { "type": "string", "minLength": 1, "description": "Human name, e.g. 'Inflows'." },
+          "unit": {
+            "enum": ["currency", "percent", "count", "number", "text"],
+            "description": "currency: money in whole units, not thousands. percent: 0 to 100, not 0 to 1. count: people, items, orders. number: anything else. text: a non-numeric column, which makes a table."
+          },
+          "nature": {
+            "enum": ["flow", "level", "signed"],
+            "description": "flow: an amount that happens during each period and could be summed (revenue, inflows, outflows, sales). level: a stock read at a point in time that should not be summed (balance, price, headcount, occupancy, average ticket). signed: a result whose sign is the point (net result, profit or loss, variance)."
+          },
+          "openKey": {
+            "type": "string",
+            "description": "Optional field with an amount still open or expected in the same period (unpaid invoices), drawn hatched on top of the paid amount."
+          }
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "description": "One object per period, category, stage or item, in display order (time: oldest first). Each row holds the dimension label and one value per measure; use null for a missing value, never 0.",
+      "items": {
+        "type": "object",
+        "additionalProperties": { "type": ["string", "number", "null"] }
+      }
+    },
+    "partOfWhole": {
+      "type": "boolean",
+      "description": "True when the rows are parts of one whole and the measure is a percent of it (adds up to 100 or less)."
+    },
+    "forecastFrom": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Index of the first row that is a forecast and not an actual. Forecast rows are drawn hatched or dashed."
+    },
+    "reference": {
+      "type": "object",
+      "required": ["value", "label"],
+      "additionalProperties": false,
+      "description": "A reference line, such as an average, a target or current capacity.",
+      "properties": {
+        "value": { "type": "number" },
+        "label": { "type": "string", "minLength": 1 },
+        "alertAbove": { "type": "boolean", "description": "Color bars above the reference as an alert." }
+      }
+    },
+    "highlight": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "description": "Row indexes whose value gets a direct label, usually the ones your answer mentions." },
+    "muted": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "description": "Row indexes drawn in grey, for rows that are not really part of the comparison." },
+    "uncertain": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "description": "Row indexes of parts of a whole whose classification is uncertain, drawn hatched." },
+    "totalRows": { "type": "array", "items": { "type": "integer", "minimum": 0 }, "description": "Stage rows that are totals rather than steps. Defaults to the first and last row." },
+    "keepOrder": { "type": "boolean", "description": "Keep the categories in the given order instead of sorting by size." },
+    "markCumulative": { "type": "boolean", "description": "Mark running totals on a part-of-a-whole bar." }
+  }
+}

@@ -8,11 +8,13 @@
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
     "./route": { "types": "./dist/route.d.ts", "default": "./dist/route.js" },
+    "./validate": { "types": "./dist/validate.d.ts", "default": "./dist/validate.js" },
+    "./schema.json": "./schema.json",
     "./locale/en": { "types": "./dist/locale/en.d.ts", "default": "./dist/locale/en.js" },
     "./locale/pt-BR": { "types": "./dist/locale/pt-BR.d.ts", "default": "./dist/locale/pt-BR.js" },
     "./package.json": "./package.json"
   },
-  "files": ["dist"],
+  "files": ["dist", "schema.json"],
   "engines": { "node": ">=20.19" },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

@@ -92,7 +92,7 @@ Most chart libraries will draw whatever you ask for. When the one asking is an L
 
 ## The rules (not configurable)
 
-- **The intent picks the form.** Columns for volume over time, horizontal bars for categories, a line for levels, diverging columns for signed results, a waterfall for stages, a single 0–100% bar for a part of a whole.
+- **The meaning picks the form.** Columns for volume over time, horizontal bars for categories, a line for levels, diverging columns for signed results, a waterfall for stages, a single 0–100% bar for a part of a whole.
 - **Never a pie. Never a dual axis.**
 - **Honest scales.** Columns and bars start at zero. A line leaves zero only when the variation exceeds 10% of the value, and the chart says so in a note.
 - **Forecast looks different.** Actuals are solid; forecast and open amounts are hatched in columns and dashed in lines.
@@ -115,11 +115,10 @@ Options: `width` (default 640), `locale` and `currency` (passed to `Intl.NumberF
 
 | Field | Meaning |
 |---|---|
-| `dimension.kind` | `time` (ordered periods), `category`, `stage` (steps of a flow), `record` (a list of items) |
+| `dimension.kind` | `time` (ordered periods), `category`, `stage` (steps from a total to a result, drawn as a waterfall), `record` (a list of items) |
 | `measures[].unit` | `currency`, `percent` (0–100), `count`, `number`, `text` |
 | `measures[].nature` | `flow` (a volume in a period), `level` (a stock at a point in time), `signed` (a result whose sign matters) |
 | `measures[].openKey` | key of an amount still open, stacked and hatched on top |
-| `intent` | `flow` turns stages into a waterfall |
 | `partOfWhole` | parts of 100% |
 | `forecastFrom` | index of the first forecast row |
 | `reference` | a reference line; `alertAbove` colors bars that cross it |

@@ -57,7 +57,6 @@ export const ticket: Dataset = {
 
 export const pnl: Dataset = {
   title: 'Of every $100 in, $10 is operating result',
-  intent: 'flow',
   dimension: { key: 'stage', label: 'Stage', kind: 'stage' },
   measures: [{ key: 'v', label: 'Value', unit: 'currency', nature: 'flow' }],
   rows: [

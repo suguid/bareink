@@ -11,7 +11,7 @@ export function route(ds: Dataset, messages?: Messages): Decision {
   if (rows.length === 1) return decide('kpi', 'single-row')
   if (new Set(ms.map((m) => m.unit)).size > 1) return decide('table', 'mixed-units')
   if (ms.length > 3) return decide('table', 'too-many-series')
-  if (dim.kind === 'stage' && ds.intent === 'flow') return decide('waterfall', 'flow-stages')
+  if (dim.kind === 'stage') return decide('waterfall', 'flow-stages')
   const negative = ms.some((m) => rows.some((r) => num(r[m.key]) < 0))
   if (ds.partOfWhole) {
     if (negative) return decide('table', 'category-negative')

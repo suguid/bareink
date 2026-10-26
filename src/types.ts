@@ -4,7 +4,6 @@ export type Unit = 'currency' | 'percent' | 'count' | 'number' | 'text'
 
 export type Nature = 'flow' | 'level' | 'signed'
 
-export type Intent = 'trend' | 'deviation' | 'rank' | 'composition' | 'flow'
 
 export type Form = 'columns' | 'bars' | 'line' | 'diverging' | 'waterfall' | 'share' | 'kpi' | 'table'
 
@@ -38,7 +37,6 @@ export interface Dataset {
   dimension: Dimension
   measures: Measure[]
   rows: Row[]
-  intent?: Intent | null
   partOfWhole?: boolean
   forecastFrom?: number
   reference?: Reference
