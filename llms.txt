@@ -1,0 +1,28 @@
+# bareink
+
+> Deterministic chart router and SVG renderer, 6.8 KB gzip, zero dependencies, no DOM. You describe what numbers mean; bareink picks the chart (or a table, or number cards), returns a stable reason code, and draws SVG. Never a pie, never a dual axis.
+
+## Use
+
+- Install: `npm install bareink`. CDN: `https://cdn.jsdelivr.net/npm/bareink@0.1.0/dist/bareink.iife.js` (global `bareink`).
+- `render(dataset, { width, messages, locale, currency })` returns `{ form, code, reason, markup, notes }`. `markup` is an SVG string for charts, HTML for tables and number cards.
+- `validate(dataset)` from `bareink/validate` returns readable errors; call it before `render` on model output and send the errors back to the model.
+- `route(dataset)` from `bareink/route` returns only the decision.
+- `reason` is empty unless a locale is passed: `en` from `bareink/locale/en`, `ptBR` from `bareink/locale/pt-BR`.
+- `schema.json` (also `bareink/schema.json`) is the dataset contract with descriptions for models. Use it as a tool's input schema.
+
+## Dataset in one example
+
+{"title":"Inflows and outflows move together","dimension":{"key":"month","label":"Month","kind":"time"},"measures":[{"key":"in","label":"Inflows","unit":"currency","nature":"flow"},{"key":"out","label":"Outflows","unit":"currency","nature":"flow"}],"rows":[{"month":"Apr","in":38900,"out":39000},{"month":"May","in":40540,"out":39850},{"month":"Jun","in":43540,"out":39790}]}
+
+## Filling it in
+
+- dimension.kind: time (ordered periods, oldest first), category (things to compare), stage (steps from a total to a result, deductions negative), record (a list of items).
+- measures[].unit: currency (whole units), percent (0 to 100), count, number, text.
+- measures[].nature: flow (happens during the period and can be summed: revenue, inflows), level (read at a point in time: balance, price, headcount), signed (the sign is the point: net result).
+- Use null for a missing value, never 0. Do not pick a chart type; there is no field for it.
+- Optional: partOfWhole, forecastFrom (row index), reference {value,label,alertAbove}, highlight / muted / uncertain / totalRows (row indexes), keepOrder, markCumulative.
+
+## Reason codes
+
+volume-trend → columns; level-trend → line; signed-mixed → diverging; category-rank, category-top → bars; flow-stages → waterfall; share-few → share; share-many → bars; single-row → kpi; too-few-periods, mixed-units, too-many-series, negative-series, category-multi, category-negative, category-flat, not-a-whole, record-list, empty, fallback → table.

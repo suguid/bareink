@@ -43,7 +43,9 @@
   "jsdelivr": "./dist/bareink.iife.js",
   "files": [
     "dist",
-    "schema.json"
+    "schema.json",
+    "llms.txt",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=20.19"

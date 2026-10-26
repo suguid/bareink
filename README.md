@@ -1,13 +1,14 @@
 # bareink
 
-**Charts that tell the bare truth — in a few kilobytes.**
+**Charts that tell the bare truth, in 6.8 KB.**
 
-`bareink` takes data described by what it *means* (a volume per month, a level over time, parts of a whole) and decides how to show it: which chart, or no chart at all. Then it draws that chart as a plain SVG string. It has zero runtime dependencies and does not need a DOM.
+Describe what your numbers *mean*: a volume per month, a level over time, parts of a whole. `bareink` decides how to show them (which chart, or no chart at all), says why, and draws the result as a plain SVG string. Zero runtime dependencies, no DOM, about 50 µs per chart.
 
 ```js
 import { render } from 'bareink'
+import { en } from 'bareink/locale/en'
 
-const { form, reason, markup } = render({
+const { form, code, reason, markup } = render({
   title: 'Inflows and outflows move together',
   dimension: { key: 'month', label: 'Month', kind: 'time' },
   measures: [
@@ -19,12 +20,19 @@ const { form, reason, markup } = render({
     { month: 'May', in: 40540, out: 39850 },
     { month: 'Jun', in: 43540, out: 39790 },
   ],
-}, { width: 640 })
+}, { width: 640, messages: en })
 
 form    // 'columns'
-reason  // 'A volume per period (inflows, outflows, revenue): columns from zero.'
+code    // 'volume-trend'
+reason  // 'A volume per period: columns from zero.'
 markup  // '<svg ...>'
 ```
+
+## Why
+
+Most chart libraries draw whatever you ask for. When the one asking is an LLM, or someone in a hurry, that means pies with slices nobody can compare, dual axes that invent a relationship, and two columns posing as a trend.
+
+`bareink` turns that around: **a deterministic router picks the form, says why, and is allowed to say no.**
 
 ## Showcase
 
@@ -43,7 +51,7 @@ Every chart below is a plain SVG string from `render()`, written to a file by [`
   <img alt="March carried the year" src="docs/img/diverging-light.svg" width="640">
 </picture>
 
-**`diverging`**: Mixed signs over time: the sign matters more than the size.
+**`diverging`**: Values below zero over time: the sign matters as much as the size.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/bars-dark.svg">
@@ -84,47 +92,109 @@ Every chart below is a plain SVG string from `render()`, written to a file by [`
 | Cash today | **kpi**: One row: numbers read better as cards. |
 <!-- showcase:end -->
 
-## Why
+## The rules
 
-Most chart libraries will draw whatever you ask for. When the one asking is an LLM, or someone in a hurry, that means pies with slices nobody can compare, dual axes that invent a relationship, and two columns posing as a trend.
+They are not configurable. That is the point.
 
-`bareink` is the opposite: **a deterministic router decides the form, says why, and is allowed to say no.**
-
-## The rules (not configurable)
-
-- **The meaning picks the form.** Columns for volume over time, horizontal bars for categories, a line for levels, diverging columns for signed results, a waterfall for stages, a single 0–100% bar for a part of a whole.
+- **The meaning picks the form.** Columns for a volume per period, horizontal bars for categories, a line for a level, diverging columns when values go below zero, a waterfall for stages, one 0–100% bar for the parts of a whole.
 - **Never a pie. Never a dual axis.**
-- **Honest scales.** Columns and bars start at zero. A line leaves zero only when the variation exceeds 10% of the value, and the chart says so in a note.
+- **Honest scales.** Columns and bars start at zero. A line leaves zero only when the range exceeds 10% of the value, and the chart says so in a note.
+- **Nothing disappears.** Values below zero are drawn below zero, or the router picks a table. Long labels are shortened on screen and kept whole in the tooltip.
 - **Forecast looks different.** Actuals are solid; forecast and open amounts are hatched in columns and dashed in lines.
-- **Few series.** Up to 3 per chart; more becomes a table.
-- **When in doubt, a table.** A single row becomes number cards. Two periods, mixed units, near-equal categories and lists of records become a table.
-- **Accessible by default.** `role="img"`, the title as the accessible name, a native `<title>` tooltip on every mark, and a table for every chart through `renderTable`.
+- **Few series.** Up to 3 per chart, named in a legend when color carries meaning.
+- **When in doubt, a table.** One row becomes number cards. Two periods, mixed units, near-equal values, sums over 100% and lists of records become a table.
+- **Accessible by default.** `role="img"` with the title as its name, a native `<title>` tooltip on every mark, and a table for every chart through `renderTable`.
+
+### What the router decides
+
+| Code | Form | When |
+|---|---|---|
+| `volume-trend` | columns | A flow over 3 to 18 periods |
+| `level-trend` | line | A level over time, or more than 18 periods |
+| `signed-mixed` | diverging | One series over time with values below zero |
+| `category-rank` / `category-top` | bars | One measure across categories (top 8, rest grouped) |
+| `flow-stages` | waterfall | `dimension.kind: 'stage'` |
+| `share-few` / `share-many` | share / bars | Parts of a whole, up to 4 / more than 4 |
+| `single-row` | kpi | One row |
+| `too-few-periods`, `mixed-units`, `too-many-series`, `negative-series`, `category-multi`, `category-negative`, `category-flat`, `not-a-whole`, `record-list`, `empty`, `fallback` | table | Everything a chart would distort |
+
+`code` is stable across versions; build on it. `reason` is the human sentence for that code, present only when you pass a locale.
 
 ## API
 
 ```ts
-route(dataset, messages?)          // { form, code, reason }: decision only, ~1 KB
+import { render, renderTable, route, cssVariables, light, dark } from 'bareink'
+import { validate } from 'bareink/validate'
+import { en } from 'bareink/locale/en'        // or { ptBR } from 'bareink/locale/pt-BR'
+
+route(dataset, messages?)          // { form, code, reason }: the decision only, 0.6 KB
 render(dataset, options?)          // { form, code, reason, markup, notes }
-renderTable(dataset, options?)     // HTML table, the fallback for any chart
+renderTable(dataset, options?)     // an HTML table, the fallback for any chart
+validate(dataset)                  // string[]: readable errors, empty when valid
 cssVariables(palette, selector?)   // CSS custom properties for a theme
 ```
 
-Options: `width` (default 640), `locale` and `currency` (passed to `Intl.NumberFormat`), `messages` (e.g. `ptBR` from `bareink/locale/pt-BR`), `palette`, `inlineColors`, `id`.
+Options: `width` (default 640), `locale` and `currency` (passed to `Intl.NumberFormat`), `messages` (a locale), `palette`, `inlineColors`, `id`.
+
+`render` trusts its input; call `validate` first when the dataset comes from a user or a model.
 
 ### The dataset
 
+The full contract, with descriptions written for language models, is [`schema.json`](schema.json) (also exported as `bareink/schema.json`).
+
 | Field | Meaning |
 |---|---|
-| `dimension.kind` | `time` (ordered periods), `category`, `stage` (steps from a total to a result, drawn as a waterfall), `record` (a list of items) |
+| `title` | The takeaway as a sentence; the chart's accessible name |
+| `dimension.kind` | `time` (ordered periods), `category`, `stage` (steps from a total to a result), `record` (a list of items) |
 | `measures[].unit` | `currency`, `percent` (0–100), `count`, `number`, `text` |
-| `measures[].nature` | `flow` (a volume in a period), `level` (a stock at a point in time), `signed` (a result whose sign matters) |
-| `measures[].openKey` | key of an amount still open, stacked and hatched on top |
-| `partOfWhole` | parts of 100% |
+| `measures[].nature` | `flow` (happens during the period: revenue, inflows), `level` (read at a point in time: balance, price), `signed` (the sign is the point: net result) |
+| `measures[].openKey` | key of an amount still open, hatched on top |
+| `partOfWhole` | the rows are parts of 100% |
 | `forecastFrom` | index of the first forecast row |
 | `reference` | a reference line; `alertAbove` colors bars that cross it |
-| `highlight`, `muted`, `uncertain`, `totalRows` | row indices for direct labels, grey bars, hatched parts, waterfall totals |
+| `highlight`, `muted`, `uncertain`, `totalRows` | row indexes for direct labels, grey bars, hatched parts, waterfall totals |
 
-Dates are never parsed: the dimension values are the labels you pass.
+Dates are never parsed: dimension values are the labels you pass. Use `null` for a missing value, never 0.
+
+## With a language model
+
+Give the model `schema.json` as the input schema of a tool, and let your app do the drawing:
+
+```js
+import schema from 'bareink/schema.json' with { type: 'json' }
+import { render } from 'bareink'
+import { validate } from 'bareink/validate'
+
+const tool = {
+  name: 'show_chart',
+  description: 'Show numbers to the user. Describe what the numbers mean; the chart type is chosen for you, and may be a table.',
+  input_schema: schema,
+}
+
+function onToolCall(input) {
+  const errors = validate(input)
+  if (errors.length) return { error: errors.join('\n') }   // the model fixes its call
+  const { code, markup } = render(input, { width: 640 })
+  show(markup)
+  return { shown: code }                                     // the model explains the choice in the user's language
+}
+```
+
+Two habits keep it honest and cheap:
+
+- When the numbers come from your own query, let the model describe the envelope (title, dimension, measures) and fill `rows` from the query result yourself. The model never retypes data.
+- Return `code`, not `reason`. The model already speaks the user's language and can say why a table was shown.
+
+## In the browser, from a CDN
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/bareink@0.1.0/dist/bareink.iife.js"></script>
+<script>
+  document.querySelector('#chart').innerHTML = bareink.render(dataset, { messages: bareink.en }).markup
+</script>
+```
+
+The IIFE build includes `validate`, `en` and `ptBR`.
 
 ## Theming
 
@@ -135,21 +205,23 @@ import { cssVariables, dark } from 'bareink'
 const css = `@media (prefers-color-scheme: dark) { ${cssVariables(dark)} }`
 ```
 
-Where CSS variables are not available (PDF, rasterizers, design tools), pass `inlineColors: true`.
+Where CSS variables are not available (PDF, rasterizers, images in a README), pass `inlineColors: true`.
 
 ## Size
 
 | Entry | min | gzip | brotli |
 |---|---|---|---|
-| `bareink` (everything) | 15.1 KB | 6.8 KB | 6.1 KB |
-| `bareink/route` | 2.4 KB | 1.1 KB | 0.9 KB |
-| `bareink/locale/pt-BR` | 1.3 KB | 0.7 KB | 0.6 KB |
+| `bareink` (`render`, `renderTable`) | 15.0 KB | 6.8 KB | 6.2 KB |
+| `bareink/route` | 1.3 KB | 0.6 KB | 0.6 KB |
+| `bareink/validate` | 2.5 KB | 1.2 KB | 1.0 KB |
+| `bareink/locale/en` | 1.3 KB | 0.7 KB | 0.5 KB |
+| `bareink/locale/pt-BR` | 1.4 KB | 0.7 KB | 0.7 KB |
 
-Measured with `pnpm size` (esbuild, minified, ES2020). Rendering takes about 40 µs per chart on Node 24 (`node scripts/bench.ts`).
+Measured with esbuild, minified, ES2020. CI fails when `render` or `route` grow past the budget in [`size-budget.json`](size-budget.json).
 
 ## Compatibility
 
-ESM, ES2020, no DOM, no dependencies. Runs in browsers, Node 20.19+, Deno, Bun and edge workers. Labels are escaped, so user or model text cannot inject markup.
+ESM with types, plus an IIFE for CDNs. ES2020, no DOM, no dependencies. Tested on Node 20.19, 22 and 24, Deno and Bun. Labels are escaped, so user or model text cannot inject markup.
 
 ## License
 
