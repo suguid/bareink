@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { cssVariables, dark, render } from '../src/index.ts'
+import { en } from '../src/locale/en.ts'
 import { cashflow, expenses, people, pnl, result, runway, ticket } from '../test/fixtures.ts'
 
 const sets = [cashflow, result, expenses, ticket, pnl, people, runway]
@@ -7,7 +8,7 @@ const width = Number(process.argv[2] ?? 640)
 
 const cards = sets
   .map((ds) => {
-    const r = render(ds, { width })
+    const r = render(ds, { width, messages: en })
     return `<section><h2>${r.form}</h2><p class="reason">${r.reason}</p>${r.markup}${r.notes.map((n) => `<p class="note">${n}</p>`).join('')}</section>`
   })
   .join('\n')

@@ -1,6 +1,6 @@
 import { light, type Ctx, type Palette, type Token } from './context.ts'
 import { formatter, type FormatOptions } from './format.ts'
-import { en } from './messages.ts'
+import { labels } from './messages.ts'
 import { bars } from './render/bars.ts'
 import { columns } from './render/columns.ts'
 import { line } from './render/line.ts'
@@ -47,7 +47,7 @@ function context(ds: Dataset, o: RenderOptions): Ctx {
     ds,
     width: Math.max(200, o.width ?? 640),
     fmt: formatter(o),
-    msg: o.messages ?? en,
+    msg: o.messages ?? labels,
     id: o.id ?? 'bi' + hash(ds.title),
     c: (t: Token) => (o.inlineColors ? pal[t] : `var(--bi-${t},${pal[t]})`),
     notes: [],
@@ -70,6 +70,5 @@ export function cssVariables(p: Palette, selector = ':root'): string {
 }
 
 export { route } from './route.ts'
-export { en } from './messages.ts'
 export { light, dark, type Palette } from './context.ts'
 export type * from './types.ts'

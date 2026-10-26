@@ -8,6 +8,7 @@
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
     "./route": { "types": "./dist/route.d.ts", "default": "./dist/route.js" },
+    "./locale/en": { "types": "./dist/locale/en.d.ts", "default": "./dist/locale/en.js" },
     "./locale/pt-BR": { "types": "./dist/locale/pt-BR.d.ts", "default": "./dist/locale/pt-BR.js" },
     "./package.json": "./package.json"
   },

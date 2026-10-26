@@ -76,13 +76,16 @@ export interface Decision {
   reason: string
 }
 
-export type NoteCode = 'axis-offset'
+export type Reasons = Record<ReasonCode, string>
 
-export interface Messages {
-  reasons: Record<ReasonCode, string>
+export interface Labels {
   others: (n: number) => string
   rest: string
   forecast: string
   open: string
   axisOffset: (start: string) => string
+}
+
+export interface Messages extends Labels {
+  reasons?: Reasons
 }

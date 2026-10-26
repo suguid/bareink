@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dark, light, render, route } from '../src/index.ts'
+import { en } from '../src/locale/en.ts'
 import type { Dataset } from '../src/types.ts'
 import { cashflow, expenses, people, pnl, result, ticket } from '../test/fixtures.ts'
 
@@ -73,7 +74,7 @@ const gallery = charts.map(([name, ds]) => {
   ] as const) {
     writeFileSync(new URL(`${name}-${theme}.svg`, img), render(ds, { width: 640, inlineColors: true, palette }).markup)
   }
-  const { reason } = route(ds)
+  const { reason } = route(ds, en)
   return [
     `<picture>`,
     `  <source media="(prefers-color-scheme: dark)" srcset="docs/img/${name}-dark.svg">`,
@@ -84,7 +85,7 @@ const gallery = charts.map(([name, ds]) => {
   ].join('\n')
 })
 
-const table = ['| Asked for | Router says |', '|---|---|', ...refusals.map((ds) => `| ${ds.title} | **${route(ds).form}**: ${route(ds).reason} |`)].join('\n')
+const table = ['| Asked for | Router says |', '|---|---|', ...refusals.map((ds) => `| ${ds.title} | **${route(ds).form}**: ${route(ds, en).reason} |`)].join('\n')
 
 const block = `<!-- showcase:start -->\n${gallery.join('\n\n')}\n\n### When the router says no\n\n${table}\n<!-- showcase:end -->`
 

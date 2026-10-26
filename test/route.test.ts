@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { route } from '../src/route.ts'
+import { en } from '../src/locale/en.ts'
 import { ptBR } from '../src/locale/pt-BR.ts'
 import type { Dataset, Form, ReasonCode } from '../src/types.ts'
 import { cashflow, expenses, people, pnl, result, runway, ticket } from './fixtures.ts'
@@ -47,7 +48,7 @@ const cases: [string, Dataset, Form, ReasonCode][] = [
 
 for (const [name, ds, form, code] of cases) {
   test(`route: ${name}`, () => {
-    const d = route(ds)
+    const d = route(ds, en)
     assert.equal(d.form, form)
     assert.equal(d.code, code)
     assert.ok(d.reason.length > 5)
@@ -60,4 +61,10 @@ test('route never returns a pie', () => {
 
 test('route speaks pt-BR when asked', () => {
   assert.match(route(people, ptBR).reason, /nunca pizza/)
+})
+
+test('route gives codes without a locale, and no reason text', () => {
+  const d = route(people)
+  assert.equal(d.code, 'share-few')
+  assert.equal(d.reason, '')
 })

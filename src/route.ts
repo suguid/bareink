@@ -1,10 +1,9 @@
-import { en } from './messages.ts'
 import type { Dataset, Decision, Form, Messages, ReasonCode } from './types.ts'
 
 export const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0)
 
-export function route(ds: Dataset, messages: Messages = en): Decision {
-  const decide = (form: Form, code: ReasonCode): Decision => ({ form, code, reason: messages.reasons[code] })
+export function route(ds: Dataset, messages?: Messages): Decision {
+  const decide = (form: Form, code: ReasonCode): Decision => ({ form, code, reason: messages?.reasons?.[code] ?? '' })
   const { dimension: dim, measures: ms, rows } = ds
 
   if (!rows.length || !ms.length) return decide('table', 'empty')
