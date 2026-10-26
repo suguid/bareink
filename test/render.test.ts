@@ -28,7 +28,14 @@ test('charts carry an accessible name and native tooltips', () => {
 })
 
 test('labels are escaped', () => {
-  const evil = { ...expenses, title: '<script>alert(1)</script>', rows: [{ category: '"><img src=x onerror=alert(1)>', paid: 10 }, { category: 'b', paid: 5 }] }
+  const evil = {
+    ...expenses,
+    title: '<script>alert(1)</script>',
+    rows: [
+      { category: '"><img src=x onerror=alert(1)>', paid: 10 },
+      { category: 'b', paid: 5 },
+    ],
+  }
   const { markup } = render(evil)
   assert.doesNotMatch(markup, /<script|<img/)
   assert.match(markup, /&#60;script&#62;/)
@@ -67,7 +74,11 @@ test('kpi renders values as cards', () => {
 
 test('cumulative share labels do not overlap on narrow widths', () => {
   const { markup } = render(people, { width: 320 })
-  const labels = [...markup.matchAll(/<text x="([\d.]+)" y="([\d.]+)"[^>]*font-weight="600">([^<]+)</g)].map((m) => ({ x: +m[1]!, y: +m[2]!, w: m[3]!.length * 6.7 }))
+  const labels = [...markup.matchAll(/<text x="([\d.]+)" y="([\d.]+)"[^>]*font-weight="600">([^<]+)</g)].map((m) => ({
+    x: +m[1]!,
+    y: +m[2]!,
+    w: m[3]!.length * 6.7,
+  }))
   for (let i = 1; i < labels.length; i++) {
     const a = labels[i - 1]!
     const b = labels[i]!

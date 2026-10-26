@@ -1,4 +1,4 @@
-import { axisRoom, forecastBand, frame, hatch, hatches, hit, labelEvery, mark, SERIES, text, xLabel, yAxis, type Ctx, type Token } from '../context.ts'
+import { axisRoom, forecastBand, frame, hatch, hatches, hit, labelEvery, mark, SERIES, text, xLabel, yAxis, lab, type Ctx, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { band, linear, nice } from '../scale.ts'
 import { BOTTOM, box, el, TOP, type Markup } from '../svg.ts'
@@ -8,7 +8,6 @@ export function columns(ctx: Ctx, signed = false): Markup {
   const { ds, width: W, fmt, msg } = ctx
   const ms = ds.measures
   const rows = ds.rows
-  const dk = ds.dimension.key
   const unit = ms[0]!.unit
   const H = signed ? 230 : 250
   const show = signed ? fmt.signed : fmt.value
@@ -22,7 +21,10 @@ export function columns(ctx: Ctx, signed = false): Markup {
   const inner = band(ms.length, [0, x.bandwidth], ms.length > 1 ? 0.08 : 0, 0)
   const gap = (x.step - x.bandwidth) / 2
   const ff = ds.forecastFrom
-  const every = labelEvery(rows.map((r) => String(r[dk] ?? '')), x.step)
+  const every = labelEvery(
+    rows.map((r) => lab(ctx, r)),
+    x.step,
+  )
   const y0 = y(0)
 
   return frame(
@@ -34,9 +36,14 @@ export function columns(ctx: Ctx, signed = false): Markup {
     rows.map((r, i) => {
       const isFc = ff != null && i >= ff
       const cx = x(i) + x.bandwidth / 2
-      const label = String(r[dk] ?? '')
+      const label = lab(ctx, r)
       const tip = [label + (isFc ? ` (${msg.forecast})` : '')]
-        .concat(ms.map((mm) => `${mm.label}: ${show(unit, total(r, mm))}` + (mm.openKey && num(r[mm.openKey]) ? ` (${fmt.value(unit, num(r[mm.openKey]))} ${msg.open})` : '')))
+        .concat(
+          ms.map(
+            (mm) =>
+              `${mm.label}: ${show(unit, total(r, mm))}` + (mm.openKey && num(r[mm.openKey]) ? ` (${fmt.value(unit, num(r[mm.openKey]))} ${msg.open})` : ''),
+          ),
+        )
         .join('\n')
       const top = total(r, ms[0]!)
       return [
@@ -67,7 +74,7 @@ export function columns(ctx: Ctx, signed = false): Markup {
     }),
     ds.reference && [
       el('line', { x1: m.l, x2: W - m.r, y1: y(ds.reference.value), y2: y(ds.reference.value), stroke: ctx.c('ink2'), 'stroke-width': 1.5 }),
-      text(ctx, W - m.r, y(ds.reference.value) - 6, ds.reference.label, {
+      text(W - m.r, y(ds.reference.value) - 6, ds.reference.label, {
         'text-anchor': 'end',
         fill: ctx.c('ink2'),
         stroke: ctx.c('surface'),

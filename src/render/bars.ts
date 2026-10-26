@@ -1,4 +1,4 @@
-import { frame, hit, text, type Ctx, type Token } from '../context.ts'
+import { frame, hit, text, lab, type Ctx, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { linear } from '../scale.ts'
 import { box, el, RIGHT, textWidth, type Markup } from '../svg.ts'
@@ -13,8 +13,7 @@ export function bars(ctx: Ctx): Markup {
   const { ds, width: W, fmt, msg } = ctx
   const mm = ds.measures[0]!
   const unit = mm.unit
-  const dk = ds.dimension.key
-  const all: Item[] = ds.rows.map((r, i) => ({ label: String(r[dk] ?? ''), value: num(r[mm.key]), muted: !!ds.muted?.includes(i) }))
+  const all: Item[] = ds.rows.map((r, i) => ({ label: lab(ctx, r), value: num(r[mm.key]), muted: !!ds.muted?.includes(i) }))
   const sorted = ds.keepOrder ? all : all.slice().sort((a, b) => b.value - a.value)
   const items =
     sorted.length > 8
@@ -49,16 +48,15 @@ export function bars(ctx: Ctx): Markup {
         narrow
           ? el('text', { x: 0, y: top + 15, 'font-size': 12.5, fill: ctx.c('ink') }, it.label, el('tspan', { dx: 8, fill: ctx.c('ink2') }, value))
           : [
-              text(ctx, m.l - 10, by + barH / 2 + 4, it.label, { 'text-anchor': 'end', 'font-size': 12.5, fill: ctx.c('ink') }),
-              text(ctx, x(it.value) + 8, by + barH / 2 + 4, value, { 'font-size': 12, fill: ctx.c('ink2') }),
+              text(m.l - 10, by + barH / 2 + 4, it.label, { 'text-anchor': 'end', 'font-size': 12.5, fill: ctx.c('ink') }),
+              text(x(it.value) + 8, by + barH / 2 + 4, value, { 'font-size': 12, fill: ctx.c('ink2') }),
             ],
         hit(0, top, W, rowH, i, `${it.label}\n${value}`),
       ]
     }),
-    ref &&
-      [
-        el('line', { x1: x(ref.value), x2: x(ref.value), y1: m.t - 8, y2: H - m.b, stroke: ctx.c('ink2'), 'stroke-width': 1.5 }),
-        text(ctx, x(ref.value), m.t - 12, ref.label, { 'text-anchor': x(ref.value) > W - 90 ? 'end' : 'middle', fill: ctx.c('ink2') }),
-      ],
+    ref && [
+      el('line', { x1: x(ref.value), x2: x(ref.value), y1: m.t - 8, y2: H - m.b, stroke: ctx.c('ink2'), 'stroke-width': 1.5 }),
+      text(x(ref.value), m.t - 12, ref.label, { 'text-anchor': x(ref.value) > W - 90 ? 'end' : 'middle', fill: ctx.c('ink2') }),
+    ],
   )
 }

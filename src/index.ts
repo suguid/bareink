@@ -24,7 +24,16 @@ export interface Rendered extends Decision {
   notes: string[]
 }
 
-const RENDERERS: Record<Form, (ctx: Ctx) => Markup> = { columns: (c) => columns(c), diverging: (c) => columns(c, true), bars, line, waterfall, share, kpi, table }
+const RENDERERS: Record<Form, (ctx: Ctx) => Markup> = {
+  columns: (c) => columns(c),
+  diverging: (c) => columns(c, true),
+  bars,
+  line,
+  waterfall,
+  share,
+  kpi,
+  table,
+}
 
 const hash = (s: string): string => {
   let h = 5381

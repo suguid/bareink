@@ -1,7 +1,7 @@
 import type { Formatter } from './format.ts'
 import { el, p, textWidth, type Child, type Markup } from './svg.ts'
 import type { Linear } from './scale.ts'
-import type { Dataset, Messages } from './types.ts'
+import type { Dataset, Messages, Row } from './types.ts'
 
 export const light = {
   s1: '#2a78d6',
@@ -46,7 +46,7 @@ export interface Ctx {
   notes: string[]
 }
 
-export const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif'
+export const FONT = 'system-ui,sans-serif'
 
 export function frame(ctx: Ctx, height: number, ...kids: Child[]): Markup {
   return el(
@@ -64,7 +64,6 @@ export function frame(ctx: Ctx, height: number, ...kids: Child[]): Markup {
       fill: ctx.c('muted'),
       style: 'overflow:visible;max-width:100%;height:auto',
     },
-    el('title', {}, ctx.ds.title),
     kids,
   )
 }
@@ -84,34 +83,33 @@ export function hatches(ctx: Ctx, tokens: Token[]): Markup {
   )
 }
 
+export const lab = (ctx: Ctx, r: Row): string => String(r[ctx.ds.dimension.key] ?? '')
+
 export const hatch = (ctx: Ctx, t: Token): string => `url(#${ctx.id}${t})`
 
-export function text(ctx: Ctx, x: number, y: number, s: string, a: Record<string, string | number | undefined> = {}): Markup {
+export function text(x: number, y: number, s: string, a: Record<string, string | number | undefined> = {}): Markup {
   return el('text', { x, y, ...a }, s)
 }
 
 export const mark = (ctx: Ctx, x: number, y: number, s: string): Markup =>
-  text(ctx, x, y, s, { 'text-anchor': 'middle', fill: ctx.c('ink'), 'font-size': 11.5, 'font-weight': 600 })
+  text(x, y, s, { 'text-anchor': 'middle', fill: ctx.c('ink'), 'font-size': 11.5, 'font-weight': 600 })
 
-export const xLabel = (ctx: Ctx, x: number, y: number, s: string): Markup => text(ctx, x, y, s, { 'text-anchor': 'middle', fill: ctx.c('ink2') })
+export const xLabel = (ctx: Ctx, x: number, y: number, s: string): Markup => text(x, y, s, { 'text-anchor': 'middle', fill: ctx.c('ink2') })
 
 export function hit(x: number, y: number, w: number, h: number, i: number, tip: string): Markup {
   return el('rect', { x, y, width: Math.max(w, 1), height: Math.max(h, 1), fill: 'transparent', tabindex: 0, 'data-i': i }, el('title', {}, tip))
 }
 
 export function yAxis(ctx: Ctx, y: Linear, x0: number, x1: number, fmt: (v: number) => string, baseAt: number): Child {
-  return [
-    y.ticks(4).map((t) =>
-      [
-        el('line', { x1: x0, x2: x1, y1: y(t), y2: y(t), stroke: ctx.c(t === baseAt ? 'base' : 'grid') }),
-        text(ctx, x0 - 8, y(t) + 4, fmt(t), { 'text-anchor': 'end' }),
-      ],
-    ),
-  ]
+  return y
+    .ticks(4)
+    .map((t) => [
+      el('line', { x1: x0, x2: x1, y1: y(t), y2: y(t), stroke: ctx.c(t === baseAt ? 'base' : 'grid') }),
+      text(x0 - 8, y(t) + 4, fmt(t), { 'text-anchor': 'end' }),
+    ])
 }
 
-export const axisRoom = (y: Linear, fmt: (v: number) => string): number =>
-  Math.max(28, ...y.ticks(4).map((t) => textWidth(fmt(t), 11) + 12))
+export const axisRoom = (y: Linear, fmt: (v: number) => string): number => Math.max(28, ...y.ticks(4).map((t) => textWidth(fmt(t), 11) + 12))
 
 export function labelEvery(labels: string[], step: number): number {
   const widest = Math.max(...labels.map((l) => textWidth(l, 11)))
@@ -119,8 +117,5 @@ export function labelEvery(labels: string[], step: number): number {
 }
 
 export function forecastBand(ctx: Ctx, x: number, y: number, w: number, h: number): Child {
-  return [
-    el('rect', { x, y: y - 16, width: w, height: h + 16, fill: ctx.c('band') }),
-    text(ctx, x + 6, y - 4, ctx.msg.forecast),
-  ]
+  return [el('rect', { x, y: y - 16, width: w, height: h + 16, fill: ctx.c('band') }), text(x + 6, y - 4, ctx.msg.forecast)]
 }

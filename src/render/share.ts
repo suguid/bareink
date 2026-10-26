@@ -1,4 +1,4 @@
-import { frame, hatch, hatches, hit, text, type Ctx, type Token } from '../context.ts'
+import { frame, hatch, hatches, hit, text, lab, type Ctx, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { linear } from '../scale.ts'
 import { el, textWidth, type Markup } from '../svg.ts'
@@ -6,11 +6,10 @@ import { el, textWidth, type Markup } from '../svg.ts'
 export function share(ctx: Ctx): Markup {
   const { ds, width: W, fmt, msg } = ctx
   const mm = ds.measures[0]!
-  const dk = ds.dimension.key
   const bh = 22
   const x = linear([0, 100], [0, W])
   const parts = ds.rows.map((r, i) => ({
-    label: String(r[dk] ?? ''),
+    label: lab(ctx, r),
     v: Math.max(0, num(r[mm.key])),
     t: (i ? 's2' : 's1') as Token,
     hatched: !!ds.uncertain?.includes(i),
@@ -48,16 +47,28 @@ export function share(ctx: Ctx): Markup {
       const cum = x(acc)
       const t: Token = p.hatched ? 's1' : p.t
       return [
-        el('rect', { x: x0, y: by, width: Math.max(w, 1), height: bh, rx: 3, fill: p.hatched ? hatch(ctx, t) : ctx.c(t), stroke: p.hatched ? ctx.c(t) : undefined }),
-        marks[i]!.row >= 0 &&
-          [
-            el('line', { x1: cum, x2: cum, y1: by - 6 - marks[i]!.row * 16, y2: by + bh + 6, stroke: ctx.c('ink2'), 'stroke-width': 1.5 }),
-            text(ctx, cum, by - 10 - marks[i]!.row * 16, marks[i]!.label, { 'text-anchor': cum > W - 40 ? 'end' : 'middle', fill: ctx.c('ink'), 'font-size': 12, 'font-weight': 600 }),
-          ],
+        el('rect', {
+          x: x0,
+          y: by,
+          width: Math.max(w, 1),
+          height: bh,
+          rx: 3,
+          fill: p.hatched ? hatch(ctx, t) : ctx.c(t),
+          stroke: p.hatched ? ctx.c(t) : undefined,
+        }),
+        marks[i]!.row >= 0 && [
+          el('line', { x1: cum, x2: cum, y1: by - 6 - marks[i]!.row * 16, y2: by + bh + 6, stroke: ctx.c('ink2'), 'stroke-width': 1.5 }),
+          text(cum, by - 10 - marks[i]!.row * 16, marks[i]!.label, {
+            'text-anchor': cum > W - 40 ? 'end' : 'middle',
+            fill: ctx.c('ink'),
+            'font-size': 12,
+            'font-weight': 600,
+          }),
+        ],
         hit(x0, by - 4, Math.max(w, 8), bh + 8, i, `${p.label}\n${fmt.value('percent', p.v)}`),
       ]
     }),
-    text(ctx, 0, by + bh + 22, fmt.value('percent', 0)),
-    text(ctx, W, by + bh + 22, fmt.value('percent', 100), { 'text-anchor': 'end' }),
+    text(0, by + bh + 22, fmt.value('percent', 0)),
+    text(W, by + bh + 22, fmt.value('percent', 100), { 'text-anchor': 'end' }),
   )
 }

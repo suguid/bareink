@@ -1,4 +1,4 @@
-import { axisRoom, frame, hit, mark, yAxis, type Ctx, type Token } from '../context.ts'
+import { axisRoom, frame, hit, mark, yAxis, lab, type Ctx, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { band, linear, nice } from '../scale.ts'
 import { box, el, TOP, type Markup } from '../svg.ts'
@@ -8,7 +8,6 @@ export function waterfall(ctx: Ctx): Markup {
   const mm = ds.measures[0]!
   const unit = mm.unit
   const rows = ds.rows
-  const dk = ds.dimension.key
   const totals = ds.totalRows ?? [0, rows.length - 1]
   const narrow = W < 520
   const H = 260
@@ -20,7 +19,7 @@ export function waterfall(ctx: Ctx): Markup {
     const from = isTotal ? 0 : level
     level = isTotal ? v : level + v
     const color: Token = isTotal ? 's1' : v < 0 ? 's2' : 's3'
-    return { label: String(r[dk] ?? ''), v, isTotal, lo: Math.min(from, level), hi: Math.max(from, level), level, color }
+    return { label: lab(ctx, r), v, isTotal, lo: Math.min(from, level), hi: Math.max(from, level), level, color }
   })
   const tick = (v: number) => fmt.tick(unit, v)
   const probe = linear(nice(Math.min(0, ...steps.map((s) => s.lo)), Math.max(0, ...steps.map((s) => s.hi)), 4), [0, 1])

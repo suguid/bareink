@@ -1,4 +1,4 @@
-import { axisRoom, frame, hit, labelEvery, SERIES, text, yAxis, xLabel, type Ctx } from '../context.ts'
+import { axisRoom, frame, hit, labelEvery, SERIES, text, yAxis, xLabel, lab, type Ctx } from '../context.ts'
 import { num } from '../route.ts'
 import { linear, nice, point } from '../scale.ts'
 import { el, polyline, textWidth, type Markup } from '../svg.ts'
@@ -15,7 +15,6 @@ export function line(ctx: Ctx): Markup {
   const { ds, width: W, fmt } = ctx
   const ms = ds.measures
   const rows = ds.rows
-  const dk = ds.dimension.key
   const unit = ms[0]!.unit
   const H = 230
   const last = rows[rows.length - 1]!
@@ -28,9 +27,11 @@ export function line(ctx: Ctx): Markup {
   const y = linear(domain, [H - m.b, m.t])
   const x = point(rows.length, [m.l, W - m.r])
   const ff = ds.forecastFrom
-  const every = labelEvery(rows.map((r) => String(r[dk] ?? '')), x.step)
-  const path = (key: string, from: number, to: number) =>
-    polyline(rows.slice(from, to).map((r, i) => [x(from + i), y(num(r[key]))]))
+  const every = labelEvery(
+    rows.map((r) => lab(ctx, r)),
+    x.step,
+  )
+  const path = (key: string, from: number, to: number) => polyline(rows.slice(from, to).map((r, i) => [x(from + i), y(num(r[key]))]))
 
   const ends = ms.map((mm) => y(num(last[mm.key])))
   for (let a = 0; a < ends.length; a++)
@@ -48,7 +49,7 @@ export function line(ctx: Ctx): Markup {
     ctx,
     H,
     yAxis(ctx, y, m.l, W - m.r, tick, domain[0]),
-    rows.map((r, i) => i % every === 0 && xLabel(ctx, x(i), H - 8, String(r[dk] ?? ''))),
+    rows.map((r, i) => i % every === 0 && xLabel(ctx, x(i), H - 8, lab(ctx, r))),
     ms.map((mm, j) => {
       const t = SERIES[j]!
       const lx = x(rows.length - 1)
@@ -63,7 +64,7 @@ export function line(ctx: Ctx): Markup {
         }),
         ff != null && el('path', { d: path(mm.key, ff, rows.length), fill: 'none', stroke: ctx.c(t), 'stroke-width': 2, 'stroke-dasharray': '4 4' }),
         el('circle', { cx: lx, cy: y(num(last[mm.key])), r: 4, fill: ctx.c(t), stroke: ctx.c('surface'), 'stroke-width': 2 }),
-        text(ctx, lx + 9, ends[j]! + 4, endText(j), { fill: ctx.c('ink'), 'font-size': 12, 'font-weight': 600 }),
+        text(lx + 9, ends[j]! + 4, endText(j), { fill: ctx.c('ink'), 'font-size': 12, 'font-weight': 600 }),
       ]
     }),
     rows.map((r, i) =>
@@ -73,7 +74,7 @@ export function line(ctx: Ctx): Markup {
         x.step || 40,
         H - m.b - m.t,
         i,
-        [String(r[dk] ?? '')].concat(ms.map((mm) => `${mm.label}: ${fmt.value(unit, num(r[mm.key]))}`)).join('\n'),
+        [lab(ctx, r)].concat(ms.map((mm) => `${mm.label}: ${fmt.value(unit, num(r[mm.key]))}`)).join('\n'),
       ),
     ),
   )

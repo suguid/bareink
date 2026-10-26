@@ -84,9 +84,9 @@ Where CSS variables are not available (PDF, rasterizers, design tools), pass `in
 
 | Entry | min | gzip | brotli |
 |---|---|---|---|
-| `bareink` (everything) | 15.8 KB | 7.1 KB | 6.3 KB |
-| `bareink/route` | 2.7 KB | 1.3 KB | 1.1 KB |
-| `bareink/locale/pt-BR` | 1.6 KB | 0.8 KB | 0.8 KB |
+| `bareink` (everything) | 15.1 KB | 6.8 KB | 6.1 KB |
+| `bareink/route` | 2.4 KB | 1.1 KB | 0.9 KB |
+| `bareink/locale/pt-BR` | 1.3 KB | 0.7 KB | 0.6 KB |
 
 Measured with `pnpm size` (esbuild, minified, ES2020). Rendering takes about 40 µs per chart on Node 24 (`node scripts/bench.ts`).
 

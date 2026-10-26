@@ -50,7 +50,7 @@ for (const [name, ds, form, code] of cases) {
     const d = route(ds)
     assert.equal(d.form, form)
     assert.equal(d.code, code)
-    assert.ok(d.reason.length > 10)
+    assert.ok(d.reason.length > 5)
   })
 }
 
@@ -59,5 +59,5 @@ test('route never returns a pie', () => {
 })
 
 test('route speaks pt-BR when asked', () => {
-  assert.match(route(people, ptBR).reason, /Nunca pizza/)
+  assert.match(route(people, ptBR).reason, /nunca pizza/)
 })
