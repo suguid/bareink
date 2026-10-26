@@ -1,30 +1,61 @@
 {
   "name": "bareink",
-  "version": "0.0.0",
-  "description": "Charts that tell the bare truth — a deterministic chart router and SVG renderer in a few kilobytes, with zero dependencies.",
-  "type": "module",
+  "version": "0.1.0",
+  "description": "Charts that tell the bare truth \u2014 a deterministic chart router and SVG renderer in a few kilobytes, with zero dependencies.",
+  "keywords": [
+    "chart",
+    "svg",
+    "dataviz",
+    "visualization",
+    "zero-dependency",
+    "llm",
+    "chart-recommendation"
+  ],
   "license": "MIT",
+  "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./route": { "types": "./dist/route.d.ts", "default": "./dist/route.js" },
-    "./validate": { "types": "./dist/validate.d.ts", "default": "./dist/validate.js" },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./route": {
+      "types": "./dist/route.d.ts",
+      "default": "./dist/route.js"
+    },
+    "./validate": {
+      "types": "./dist/validate.d.ts",
+      "default": "./dist/validate.js"
+    },
     "./schema.json": "./schema.json",
-    "./locale/en": { "types": "./dist/locale/en.d.ts", "default": "./dist/locale/en.js" },
-    "./locale/pt-BR": { "types": "./dist/locale/pt-BR.d.ts", "default": "./dist/locale/pt-BR.js" },
-    "./package.json": "./package.json"
+    "./locale/en": {
+      "types": "./dist/locale/en.d.ts",
+      "default": "./dist/locale/en.js"
+    },
+    "./locale/pt-BR": {
+      "types": "./dist/locale/pt-BR.d.ts",
+      "default": "./dist/locale/pt-BR.js"
+    },
+    "./package.json": "./package.json",
+    "./iife": "./dist/bareink.iife.js"
   },
-  "files": ["dist", "schema.json"],
-  "engines": { "node": ">=20.19" },
+  "unpkg": "./dist/bareink.iife.js",
+  "jsdelivr": "./dist/bareink.iife.js",
+  "files": [
+    "dist",
+    "schema.json"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node --test test/*.test.ts",
     "size": "node scripts/size.mjs",
     "example": "node examples/build.ts",
     "readme": "node examples/readme.ts"
   },
-  "keywords": ["chart", "svg", "dataviz", "visualization", "zero-dependency", "llm", "chart-recommendation"],
   "devDependencies": {
     "esbuild": "0.28.2",
     "@types/node": "24.10.1",
