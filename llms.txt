@@ -1,6 +1,6 @@
 # bareink
 
-> Deterministic chart router and SVG renderer, 6.8 KB gzip, zero dependencies, no DOM. You describe what numbers mean; bareink picks the chart (or a table, or number cards), returns a stable reason code, and draws SVG. Never a pie, never a dual axis.
+> Deterministic chart router and SVG renderer, 7 KB gzip, zero dependencies, no DOM. You describe what numbers mean; bareink picks the chart (or a table, or number cards), returns a stable reason code, and draws SVG. Never a pie, never a dual axis.
 
 ## Use
 
@@ -20,9 +20,9 @@
 - dimension.kind: time (ordered periods, oldest first), category (things to compare), stage (steps from a total to a result, deductions negative), record (a list of items).
 - measures[].unit: currency (whole units), percent (0 to 100), count, number, text.
 - measures[].nature: flow (happens during the period and can be summed: revenue, inflows), level (read at a point in time: balance, price, headcount), signed (the sign is the point: net result).
-- Use null for a missing value, never 0. Do not pick a chart type; there is no field for it.
-- Optional: partOfWhole, forecastFrom (row index), reference {value,label,alertAbove}, highlight / muted / uncertain / totalRows (row indexes), keepOrder, markCumulative.
+- Use null for a missing value, never 0. Do not pick a chart type; there is no field for it. Unknown fields are rejected by validate.
+- Optional: partOfWhole (measure unit must be percent), forecastFrom (row index), reference {value,label,alertAbove}, highlight / muted / uncertain / totalRows (row indexes), keepOrder, markCumulative.
 
 ## Reason codes
 
-volume-trend → columns; level-trend → line; signed-mixed → diverging; category-rank, category-top → bars; flow-stages → waterfall; share-few → share; share-many → bars; single-row → kpi; too-few-periods, mixed-units, too-many-series, negative-series, category-multi, category-negative, category-flat, not-a-whole, record-list, empty, fallback → table.
+volume-trend → columns; level-trend → line; signed-mixed → diverging; category-rank, category-top → bars; flow-stages → waterfall; share-few (up to 3 parts) → share; share-many → bars; single-row → kpi; too-few-periods, mixed-units, too-many-series, negative-series, category-multi, category-negative, category-flat, not-a-whole, missing-values, record-list, empty, fallback → table.

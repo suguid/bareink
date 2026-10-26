@@ -1,8 +1,8 @@
 # bareink
 
-**Charts that tell the bare truth, in 6.8 KB.**
+**Charts that tell the bare truth, in 7 KB.**
 
-Describe what your numbers *mean*: a volume per month, a level over time, parts of a whole. `bareink` decides how to show them (which chart, or no chart at all), says why, and draws the result as a plain SVG string. Zero runtime dependencies, no DOM, about 50 µs per chart.
+Describe what your numbers *mean*: a volume per month, a level over time, parts of a whole. `bareink` decides how to show them (which chart, or no chart at all), says why, and draws the result as a plain SVG string. Zero runtime dependencies, no DOM, under 0.1 ms per chart.
 
 ```js
 import { render } from 'bareink'
@@ -79,7 +79,7 @@ Every chart below is a plain SVG string from `render()`, written to a file by [`
   <img alt="People take 29% of revenue, 43% with owners" src="docs/img/share-light.svg" width="640">
 </picture>
 
-**`share`**: Up to 4 parts of a whole: one 0–100% bar, never a pie.
+**`share`**: Up to 3 parts of a whole: one 0–100% bar, never a pie.
 
 ### When the router says no
 
@@ -96,10 +96,10 @@ Every chart below is a plain SVG string from `render()`, written to a file by [`
 
 They are not configurable. That is the point.
 
-- **The meaning picks the form.** Columns for a volume per period, horizontal bars for categories, a line for a level, diverging columns when values go below zero, a waterfall for stages, one 0–100% bar for the parts of a whole.
+- **The meaning picks the form.** Columns for a volume per period, horizontal bars for categories, a line for a level, diverging columns when values go below zero, a waterfall for stages, one 0–100% bar for up to 3 parts of a whole.
 - **Never a pie. Never a dual axis.**
 - **Honest scales.** Columns and bars start at zero. A line leaves zero only when the range exceeds 10% of the value, and the chart says so in a note.
-- **Nothing disappears.** Values below zero are drawn below zero, or the router picks a table. Long labels are shortened on screen and kept whole in the tooltip.
+- **Nothing disappears, nothing is invented.** Values below zero are drawn below zero, or the router picks a table. A missing value is a gap in a line or an empty slot in columns, never a zero; in categories, stages and shares it makes a table. Long labels are shortened on screen and kept whole in the tooltip.
 - **Forecast looks different.** Actuals are solid; forecast and open amounts are hatched in columns and dashed in lines.
 - **Few series.** Up to 3 per chart, named in a legend when color carries meaning.
 - **When in doubt, a table.** One row becomes number cards. Two periods, mixed units, near-equal values, sums over 100% and lists of records become a table.
@@ -114,9 +114,9 @@ They are not configurable. That is the point.
 | `signed-mixed` | diverging | One series over time with values below zero |
 | `category-rank` / `category-top` | bars | One measure across categories (top 8, rest grouped) |
 | `flow-stages` | waterfall | `dimension.kind: 'stage'` |
-| `share-few` / `share-many` | share / bars | Parts of a whole, up to 4 / more than 4 |
+| `share-few` / `share-many` | share / bars | Percent parts of a whole, up to 3 / more than 3 |
 | `single-row` | kpi | One row |
-| `too-few-periods`, `mixed-units`, `too-many-series`, `negative-series`, `category-multi`, `category-negative`, `category-flat`, `not-a-whole`, `record-list`, `empty`, `fallback` | table | Everything a chart would distort |
+| `too-few-periods`, `mixed-units`, `too-many-series`, `negative-series`, `category-multi`, `category-negative`, `category-flat`, `not-a-whole`, `missing-values`, `record-list`, `empty`, `fallback` | table | Everything a chart would distort |
 
 `code` is stable across versions; build on it. `reason` is the human sentence for that code, present only when you pass a locale.
 
@@ -127,14 +127,14 @@ import { render, renderTable, route, cssVariables, light, dark } from 'bareink'
 import { validate } from 'bareink/validate'
 import { en } from 'bareink/locale/en'        // or { ptBR } from 'bareink/locale/pt-BR'
 
-route(dataset, messages?)          // { form, code, reason }: the decision only, 0.6 KB
+route(dataset, messages?)          // { form, code, reason }: the decision only, 0.7 KB
 render(dataset, options?)          // { form, code, reason, markup, notes }
 renderTable(dataset, options?)     // an HTML table, the fallback for any chart
 validate(dataset)                  // string[]: readable errors, empty when valid
 cssVariables(palette, selector?)   // CSS custom properties for a theme
 ```
 
-Options: `width` (default 640), `locale` and `currency` (passed to `Intl.NumberFormat`), `messages` (a locale), `palette`, `inlineColors`, `id`.
+Options: `width` (default 640), `locale` and `currency` (passed to `Intl.NumberFormat`), `messages` (a locale), `palette`, `inlineColors`, `id` (prefix for the hatch patterns; set it when one page shows charts with different inline palettes).
 
 `render` trusts its input; call `validate` first when the dataset comes from a user or a model.
 
@@ -149,7 +149,7 @@ The full contract, with descriptions written for language models, is [`schema.js
 | `measures[].unit` | `currency`, `percent` (0–100), `count`, `number`, `text` |
 | `measures[].nature` | `flow` (happens during the period: revenue, inflows), `level` (read at a point in time: balance, price), `signed` (the sign is the point: net result) |
 | `measures[].openKey` | key of an amount still open, hatched on top |
-| `partOfWhole` | the rows are parts of 100% |
+| `partOfWhole` | the rows are percent parts of one whole (`unit: 'percent'`) |
 | `forecastFrom` | index of the first forecast row |
 | `reference` | a reference line; `alertAbove` colors bars that cross it |
 | `highlight`, `muted`, `uncertain`, `totalRows` | row indexes for direct labels, grey bars, hatched parts, waterfall totals |
@@ -211,11 +211,11 @@ Where CSS variables are not available (PDF, rasterizers, images in a README), pa
 
 | Entry | min | gzip | brotli |
 |---|---|---|---|
-| `bareink` (`render`, `renderTable`) | 15.0 KB | 6.8 KB | 6.2 KB |
-| `bareink/route` | 1.3 KB | 0.6 KB | 0.6 KB |
-| `bareink/validate` | 2.5 KB | 1.2 KB | 1.0 KB |
-| `bareink/locale/en` | 1.3 KB | 0.7 KB | 0.5 KB |
-| `bareink/locale/pt-BR` | 1.4 KB | 0.7 KB | 0.7 KB |
+| `bareink` (`render`, `renderTable`) | 15.4 KB | 7.0 KB | 6.4 KB |
+| `bareink/route` | 1.5 KB | 0.7 KB | 0.6 KB |
+| `bareink/validate` | 3.4 KB | 1.5 KB | 1.3 KB |
+| `bareink/locale/en` | 1.4 KB | 0.7 KB | 0.5 KB |
+| `bareink/locale/pt-BR` | 1.5 KB | 0.7 KB | 0.7 KB |
 
 Measured with esbuild, minified, ES2020. CI fails when `render` or `route` grow past the budget in [`size-budget.json`](size-budget.json).
 

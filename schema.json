@@ -62,7 +62,7 @@
     },
     "partOfWhole": {
       "type": "boolean",
-      "description": "True when the rows are parts of one whole and the measure is a percent of it (adds up to 100 or less)."
+      "description": "True when the rows are parts of one whole. The single measure must have unit percent and add up to 100 or less. Up to 3 parts become one 0-100% bar, more become sorted bars."
     },
     "forecastFrom": {
       "type": "integer",
