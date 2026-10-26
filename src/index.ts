@@ -35,21 +35,15 @@ const RENDERERS: Record<Form, (ctx: Ctx) => Markup> = {
   table,
 }
 
-const hash = (s: string): string => {
-  let h = 5381
-  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0
-  return (h >>> 0).toString(36)
-}
-
 function context(ds: Dataset, o: RenderOptions): Ctx {
   const ff = ds.forecastFrom
   const pal = { ...light, ...o.palette }
   return {
     ds,
-    width: Math.max(200, o.width ?? 640),
+    width: Math.max(200, Number(o.width) || 640),
     fmt: formatter(o),
     msg: o.messages ?? labels,
-    id: o.id ?? 'bi' + hash(ds.title),
+    id: (o.id ?? 'bi').replace(/[^\w-]/g, '_'),
     ff: ff != null && ff >= 0 && ff < ds.rows.length ? ff : undefined,
     c: (t: Token) => (o.inlineColors ? pal[t] : `var(--bi-${t},${pal[t]})`),
     notes: [],

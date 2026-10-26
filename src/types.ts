@@ -68,6 +68,7 @@ export type ReasonCode =
   | 'category-rank'
   | 'category-top'
   | 'empty'
+  | 'missing-values'
   | 'fallback'
 
 export interface Decision {

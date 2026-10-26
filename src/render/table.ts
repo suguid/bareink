@@ -1,13 +1,12 @@
-import { lab, type Ctx } from '../context.ts'
-import { num } from '../route.ts'
+import { lab, show, type Ctx } from '../context.ts'
+import { isNum, num } from '../route.ts'
 import { el, type Markup } from '../svg.ts'
 import type { Measure, Row } from '../types.ts'
 
 const cell = (ctx: Ctx, r: Row, m: Measure): string => {
   const v = r[m.key]
   if (m.unit === 'text' || typeof v === 'string') return String(v ?? '')
-  const total = num(v) + (m.openKey ? num(r[m.openKey]) : 0)
-  return m.nature === 'signed' ? ctx.fmt.signed(m.unit, total) : ctx.fmt.value(m.unit, total)
+  return show(ctx, m.unit, isNum(v) ? v + (m.openKey ? Math.max(0, num(r[m.openKey])) : 0) : null, m.nature === 'signed')
 }
 
 export function table(ctx: Ctx): Markup {

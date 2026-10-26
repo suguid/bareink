@@ -1,6 +1,8 @@
 import type { Dataset, Decision, Form, Messages, ReasonCode } from './types.ts'
 
-export const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0)
+export const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v)
+
+export const num = (v: unknown): number => (isNum(v) ? v : 0)
 
 export function route(ds: Dataset, messages?: Messages): Decision {
   const decide = (form: Form, code: ReasonCode): Decision => ({ form, code, reason: messages?.reasons?.[code] ?? '' })
@@ -11,12 +13,17 @@ export function route(ds: Dataset, messages?: Messages): Decision {
   if (rows.length === 1) return decide('kpi', 'single-row')
   if (new Set(ms.map((m) => m.unit)).size > 1) return decide('table', 'mixed-units')
   if (ms.length > 3) return decide('table', 'too-many-series')
+  const values = ms.flatMap((m) => rows.map((r) => r[m.key]))
+  if (!values.some(isNum)) return decide('table', 'empty')
+  if (dim.kind !== 'time' && !values.every(isNum)) return decide('table', 'missing-values')
+  const whole = ds.partOfWhole && ms[0]!.unit === 'percent'
+  if ((whole || dim.kind === 'stage') && ms.length > 1) return decide('table', 'category-multi')
   if (dim.kind === 'stage') return decide('waterfall', 'flow-stages')
-  const negative = ms.some((m) => rows.some((r) => num(r[m.key]) < 0))
-  if (ds.partOfWhole) {
+  const negative = values.some((v) => num(v) < 0)
+  if (whole) {
     if (negative) return decide('table', 'category-negative')
     if (rows.reduce((s, r) => s + num(r[ms[0]!.key]), 0) > 100.5) return decide('table', 'not-a-whole')
-    return rows.length <= 4 ? decide('share', 'share-few') : decide('bars', 'share-many')
+    return rows.length <= 3 ? decide('share', 'share-few') : decide('bars', 'share-many')
   }
 
   if (dim.kind === 'time') {

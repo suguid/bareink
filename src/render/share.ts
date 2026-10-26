@@ -1,4 +1,4 @@
-import { frame, hatch, hatches, hit, legend, text, lab, type Ctx, type Token } from '../context.ts'
+import { frame, hatch, hatches, hit, legend, SERIES, text, lab, type Ctx, type Token } from '../context.ts'
 import { num } from '../route.ts'
 import { linear } from '../scale.ts'
 import { el, textWidth, type Markup } from '../svg.ts'
@@ -11,7 +11,7 @@ export function share(ctx: Ctx): Markup {
   const parts = ds.rows.map((r, i) => ({
     label: lab(ctx, r),
     v: Math.max(0, num(r[mm.key])),
-    t: (i ? 's2' : 's1') as Token,
+    t: SERIES[i] ?? 's3',
     hatched: !!ds.uncertain?.includes(i),
   }))
   const rest = 100 - parts.reduce((s, p) => s + p.v, 0)
@@ -34,7 +34,7 @@ export function share(ctx: Ctx): Markup {
   })
   const [key, kh] = legend(
     ctx,
-    parts.map((p) => ({ label: `${p.label} ${fmt.value('percent', p.v)}`, t: p.hatched ? 's1' : p.t, hatched: p.hatched })),
+    parts.map((p) => ({ label: `${p.label} ${fmt.value('percent', p.v)}`, t: p.t, hatched: p.hatched })),
   )
   const by = kh + (marks.some((mk) => mk.row === 1) ? 44 : 28)
   const H = by + 48
@@ -43,14 +43,14 @@ export function share(ctx: Ctx): Markup {
   return frame(
     ctx,
     H,
-    hatches(ctx, ['s1', 's2']),
+    hatches(ctx, SERIES),
     key,
     parts.map((p, i) => {
       const x0 = x(acc) + (i ? 1 : 0)
       const w = x(p.v) - x(0) - (i ? 2 : 0) - (i < parts.length - 1 ? 1 : 0)
       acc += p.v
       const cum = x(acc)
-      const t: Token = p.hatched ? 's1' : p.t
+      const t: Token = p.t
       return [
         el('rect', {
           x: x0,

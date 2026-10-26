@@ -5,13 +5,23 @@ export const NATURES = ['flow', 'level', 'signed'] as const
 type Obj = Record<string, unknown>
 
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v)
+
+const FIELDS = {
+  '': 'schemaVersion title dimension measures rows partOfWhole forecastFrom reference highlight muted uncertain totalRows keepOrder markCumulative',
+  'dimension.': 'key label kind',
+  'measures[].': 'key label unit nature openKey',
+  'reference.': 'value label alertAbove',
+}
 const show = (v: unknown): string => (v === undefined ? 'nothing' : JSON.stringify(v))
 
 export function validate(ds: unknown): string[] {
   const errors: string[] = []
   const fail = (path: string, rule: string, got: unknown) => errors.push(`${path} ${rule}; got ${show(got)}`)
   const text = (o: Obj, k: string, path: string) => {
-    if (typeof o[k] !== 'string' || !o[k]) fail(path + k, 'must be a non-empty string', o[k])
+    if (typeof o[k] !== 'string' || !(o[k] as string).trim()) fail(path + k, 'must be a non-empty string', o[k])
+  }
+  const known = (o: Obj, path: keyof typeof FIELDS, at = path as string) => {
+    for (const k in o) if (!FIELDS[path].split(' ').includes(k)) fail(at + k, `is not a field; use one of ${FIELDS[path].split(' ').join(', ')}`, o[k])
   }
   const oneOf = (o: Obj, k: string, path: string, list: readonly string[], optional?: boolean) => {
     if (optional && o[k] === undefined) return
@@ -19,11 +29,14 @@ export function validate(ds: unknown): string[] {
   }
 
   if (!isObj(ds)) return [`dataset must be an object; got ${show(ds)}`]
+  known(ds, '')
+  if (ds.schemaVersion !== undefined && ds.schemaVersion !== 1) fail('schemaVersion', 'must be 1', ds.schemaVersion)
   text(ds, 'title', '')
 
   const dim = ds.dimension
   if (!isObj(dim)) fail('dimension', 'must be an object with key, label and kind', dim)
   else {
+    known(dim, 'dimension.')
     text(dim, 'key', 'dimension.')
     text(dim, 'label', 'dimension.')
     oneOf(dim, 'kind', 'dimension.', KINDS)
@@ -36,14 +49,16 @@ export function validate(ds: unknown): string[] {
     ms.forEach((m, i) => {
       const at = `measures[${i}].`
       if (!isObj(m)) return fail(at.slice(0, -1), 'must be an object', m)
+      known(m, 'measures[].', at)
       text(m, 'key', at)
       text(m, 'label', at)
       oneOf(m, 'unit', at, UNITS)
       oneOf(m, 'nature', at, NATURES, true)
-      if (m.openKey !== undefined && typeof m.openKey !== 'string') fail(at + 'openKey', 'must be a string', m.openKey)
-      if (typeof m.key === 'string') {
-        if (keys.has(m.key) || (isObj(dim) && m.key === dim.key)) fail(at + 'key', 'must be unique across the dimension and measures', m.key)
-        keys.add(m.key)
+      for (const k of [m.key, m.openKey]) {
+        if (k === undefined) continue
+        if (typeof k !== 'string') fail(at + 'openKey', 'must be a string', k)
+        else if (keys.has(k) || (isObj(dim) && k === dim.key)) fail(at + (k === m.key ? 'key' : 'openKey'), 'must be unique across the dimension, measures and open amounts', k)
+        else keys.add(k)
       }
     })
 
@@ -61,8 +76,9 @@ export function validate(ds: unknown): string[] {
         for (const k of [m.key, m.openKey]) {
           if (typeof k !== 'string') continue
           const v = r[k]
-          const ok = v == null || (m.unit === 'text' ? typeof v === 'string' : typeof v === 'number' && Number.isFinite(v))
-          if (!ok) fail(`${at}.${k}`, m.unit === 'text' ? 'must be a string or null' : 'must be a finite number or null', v)
+          const size = typeof v === 'number' ? Math.abs(v) : 0
+          const ok = v == null || (m.unit === 'text' ? typeof v === 'string' : typeof v === 'number' && size <= 1e15 && (!size || size >= 1e-9) && (k === m.key || v >= 0))
+          if (!ok) fail(`${at}.${k}`, m.unit === 'text' ? 'must be a string or null' : k === m.key ? 'must be a number between -1e15 and 1e15, or null' : 'must be zero or more, or null', v)
         }
       }
     })
@@ -77,6 +93,7 @@ export function validate(ds: unknown): string[] {
     if (!Array.isArray(v)) fail(k, 'must be an array of row indexes', v)
     else v.forEach((x, i) => index(`${k}[${i}]`, x))
   }
+  if (ds.partOfWhole === true && Array.isArray(ms) && isObj(ms[0]) && ms[0].unit !== 'percent') fail('measures[0].unit', 'must be percent when partOfWhole is true', ms[0].unit)
   for (const k of ['partOfWhole', 'keepOrder', 'markCumulative']) {
     if (ds[k] !== undefined && typeof ds[k] !== 'boolean') fail(k, 'must be true or false', ds[k])
   }
@@ -85,7 +102,9 @@ export function validate(ds: unknown): string[] {
     if (!isObj(ref)) fail('reference', 'must be an object with value and label', ref)
     else {
       if (typeof ref.value !== 'number' || !Number.isFinite(ref.value)) fail('reference.value', 'must be a finite number', ref.value)
+      known(ref, 'reference.')
       text(ref, 'label', 'reference.')
+      if (ref.alertAbove !== undefined && typeof ref.alertAbove !== 'boolean') fail('reference.alertAbove', 'must be true or false', ref.alertAbove)
     }
   }
   return errors

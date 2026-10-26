@@ -1,7 +1,8 @@
 import type { Formatter } from './format.ts'
 import { el, fit, p, textWidth, type Child, type Markup } from './svg.ts'
 import type { Linear } from './scale.ts'
-import type { Dataset, Messages, Row } from './types.ts'
+import { isNum } from './route.ts'
+import type { Dataset, Messages, Row, Unit, Value } from './types.ts'
 
 export const light = {
   s1: '#2a78d6',
@@ -85,6 +86,14 @@ export function hatches(ctx: Ctx, tokens: Token[]): Markup {
 }
 
 export const lab = (ctx: Ctx, r: Row): string => String(r[ctx.ds.dimension.key] ?? '')
+
+export const show = (ctx: Ctx, unit: Unit, v: Value, signed?: boolean): string =>
+  isNum(v) ? (signed ? ctx.fmt.signed : ctx.fmt.value)(unit, v) : '—'
+
+export const refLine = (ctx: Ctx, x1: number, x2: number, y: number, label: string): Child => [
+  el('line', { x1, x2, y1: y, y2: y, stroke: ctx.c('ink2'), 'stroke-width': 1.5 }),
+  text(x2, y - 6, label, { 'text-anchor': 'end', fill: ctx.c('ink2'), stroke: ctx.c('surface'), 'stroke-width': 4, 'paint-order': 'stroke', 'stroke-linejoin': 'round' }),
+]
 
 export const hatch = (ctx: Ctx, t: Token): string => `url(#${ctx.id}${t})`
 
