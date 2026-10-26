@@ -1,0 +1,29 @@
+{
+  "name": "bareink",
+  "version": "0.0.0",
+  "description": "Charts that tell the bare truth — a deterministic chart router and SVG renderer in a few kilobytes, with zero dependencies.",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./route": { "types": "./dist/route.d.ts", "default": "./dist/route.js" },
+    "./locale/pt-BR": { "types": "./dist/locale/pt-BR.d.ts", "default": "./dist/locale/pt-BR.js" },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist"],
+  "engines": { "node": ">=20.19" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.ts",
+    "size": "node scripts/size.mjs",
+    "example": "node examples/build.ts"
+  },
+  "keywords": ["chart", "svg", "dataviz", "visualization", "zero-dependency", "llm", "chart-recommendation"],
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3"
+  }
+}
