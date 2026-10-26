@@ -60,6 +60,7 @@ export type ReasonCode =
   | 'share-many'
   | 'too-few-periods'
   | 'signed-mixed'
+  | 'negative-series'
   | 'level-trend'
   | 'volume-trend'
   | 'category-multi'
