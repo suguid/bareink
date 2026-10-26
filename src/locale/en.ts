@@ -3,6 +3,8 @@ import type { Messages } from '../types.ts'
 
 export const en: Messages = {
   ...labels,
+  locale: 'en-US',
+  currency: 'USD',
   reasons: {
     'record-list': 'A list of items, not a series: table.',
     'single-row': 'One row: numbers read better as cards.',

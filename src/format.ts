@@ -1,7 +1,9 @@
 import type { Unit } from './types.ts'
 
 export interface FormatOptions {
+  /** BCP 47 tag for numbers, e.g. `'pt-BR'`. Defaults to the locale's own, then `'en-US'`. */
   locale?: string
+  /** ISO 4217 code, e.g. `'BRL'`. Defaults to the locale's own, then `'USD'`. */
   currency?: string
 }
 

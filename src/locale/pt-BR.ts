@@ -1,6 +1,8 @@
 import type { Messages } from '../types.ts'
 
 export const ptBR: Messages = {
+  locale: 'pt-BR',
+  currency: 'BRL',
   reasons: {
     'record-list': 'Lista de itens, não uma série: tabela.',
     'single-row': 'Uma linha: números leem melhor em cartões.',

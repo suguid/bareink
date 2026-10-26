@@ -4,6 +4,7 @@ export const isNum = (v: unknown): v is number => typeof v === 'number' && Numbe
 
 export const num = (v: unknown): number => (isNum(v) ? v : 0)
 
+/** Only the decision: which form, a stable code and, with a locale, the reason. 0.7 KB on its own. */
 export function route(ds: Dataset, messages?: Messages): Decision {
   const decide = (form: Form, code: ReasonCode): Decision => ({ form, code, reason: messages?.reasons?.[code] ?? '' })
   const { dimension: dim, measures: ms, rows } = ds

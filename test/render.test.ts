@@ -108,3 +108,8 @@ test('share names every part, not only the cumulative marks', () => {
 test('a single-series chart has no legend', () => {
   assert.doesNotMatch(visible(render(ticket).markup), /<rect[^>]*width="10" height="10"/)
 })
+
+test('a locale alone sets number formatting, and options still win', () => {
+  assert.match(render(cashflow, { messages: ptBR }).markup, /R\$/)
+  assert.match(render(cashflow, { messages: ptBR, currency: 'EUR' }).markup, /€/)
+})

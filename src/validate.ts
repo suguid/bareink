@@ -14,6 +14,7 @@ const FIELDS = {
 }
 const show = (v: unknown): string => (v === undefined ? 'nothing' : JSON.stringify(v))
 
+/** Checks untrusted input against the dataset contract. Returns readable errors, each with a path, the rule and the value received; empty when valid. */
 export function validate(ds: unknown): string[] {
   const errors: string[] = []
   const fail = (path: string, rule: string, got: unknown) => errors.push(`${path} ${rule}; got ${show(got)}`)
