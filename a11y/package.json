@@ -1,0 +1,13 @@
+{
+  "name": "bareink-screen-reader",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@guidepup/guidepup": "0.36.4",
+    "@guidepup/playwright": "0.20.0",
+    "@playwright/test": "1.64.1"
+  }
+}

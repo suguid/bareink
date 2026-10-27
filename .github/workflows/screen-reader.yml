@@ -1,0 +1,36 @@
+name: Screen reader
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  nvda:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: node scripts/a11y.ts --page a11y/page.html
+      - run: npx -y --ignore-scripts=false @guidepup/setup@0.29.3 setup --ci
+      - run: npm ci
+        working-directory: a11y
+      - run: npx playwright install chromium
+        working-directory: a11y
+      - run: npx -y --ignore-scripts=false @guidepup/setup@0.29.3 install
+      - run: npx playwright test
+        working-directory: a11y
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: nvda-heard
+          path: a11y/test-results

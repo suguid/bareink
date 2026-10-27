@@ -82,7 +82,8 @@
     "size": "node scripts/size.mjs",
     "example": "node examples/build.ts",
     "readme": "node examples/readme.ts",
-    "site": "node site/build.ts"
+    "site": "node site/build.ts",
+    "a11y": "node scripts/a11y.ts"
   },
   "devDependencies": {
     "@types/node": "24.10.1",

@@ -342,7 +342,7 @@ if (form !== 'table' && form !== 'kpi') {
 
 ## Accessibility
 
-Every chart is an SVG with `role="img"` and the dataset's `title` as its accessible name, so the title should state the takeaway. Text meets WCAG AA contrast in both palettes. For the numbers themselves, put the table one click away; `<details>` needs no JavaScript:
+Every chart is an SVG with `role="img"` and the dataset's `title` as its accessible name, so the title should state the takeaway. Text meets WCAG AA contrast in both palettes. Each release is checked twice: CI reads Chrome's accessibility tree for every form, and NVDA itself reads the charts, bars and tables on Windows, with what it said kept as an artifact. For the numbers themselves, put the table one click away; `<details>` needs no JavaScript:
 
 ```js
 const html = `<figure>

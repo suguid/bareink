@@ -27,6 +27,7 @@ jobs:
       - run: pnpm build
       - run: node scripts/smoke.mjs
       - run: node scripts/smoke-mcp.mjs
+      - run: node scripts/a11y.ts
       - name: Size budget
         run: pnpm size
       - uses: actions/upload-artifact@v7
