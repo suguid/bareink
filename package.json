@@ -45,6 +45,18 @@
       "types": "./dist/locale/pt-BR.d.ts",
       "default": "./dist/locale/pt-BR.js"
     },
+    "./locale/es": {
+      "types": "./dist/locale/es.d.ts",
+      "default": "./dist/locale/es.js"
+    },
+    "./locale/fr": {
+      "types": "./dist/locale/fr.d.ts",
+      "default": "./dist/locale/fr.js"
+    },
+    "./locale/de": {
+      "types": "./dist/locale/de.d.ts",
+      "default": "./dist/locale/de.js"
+    },
     "./package.json": "./package.json",
     "./iife": "./dist/bareink.iife.js"
   },

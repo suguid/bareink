@@ -17,7 +17,10 @@ test('the public surface only grows on purpose', () => {
   assert.deepEqual(Object.keys(pkg.exports).sort(), [
     '.',
     './iife',
+    './locale/de',
     './locale/en',
+    './locale/es',
+    './locale/fr',
     './locale/pt-BR',
     './package.json',
     './route',

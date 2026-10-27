@@ -2,7 +2,10 @@
 import { readFileSync } from 'node:fs'
 import { createInterface } from 'node:readline'
 import { render } from '../dist/index.js'
+import { de } from '../dist/locale/de.js'
 import { en } from '../dist/locale/en.js'
+import { es } from '../dist/locale/es.js'
+import { fr } from '../dist/locale/fr.js'
 import { ptBR } from '../dist/locale/pt-BR.js'
 import { validate } from '../dist/validate.js'
 
@@ -12,7 +15,7 @@ const arg = (name) => {
   const i = process.argv.indexOf(`--${name}`)
   return i > 0 ? process.argv[i + 1] : undefined
 }
-const messages = (arg('locale') ?? process.env.BAREINK_LOCALE) === 'pt-BR' ? ptBR : en
+const messages = { de, en, es, fr, 'pt-BR': ptBR }[arg('locale') ?? process.env.BAREINK_LOCALE ?? 'en'] ?? en
 const width = Number(arg('width')) || 640
 
 const tool = {

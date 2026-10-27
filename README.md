@@ -142,7 +142,7 @@ When the data comes from a user or a model, `validate` explains what is wrong wi
 ```ts
 import { render, renderTable, route, cssVariables, light, dark } from 'bareink'
 import { validate } from 'bareink/validate'
-import { en } from 'bareink/locale/en'        // or { ptBR } from 'bareink/locale/pt-BR'
+import { en } from 'bareink/locale/en'        // or es, fr, de, or ptBR from 'bareink/locale/pt-BR'
 
 route(dataset, messages?)          // { form, code, reason }: the decision only, 0.7 KB
 render(dataset, options?)          // { form, code, reason, markup, notes }
@@ -298,7 +298,7 @@ The package ships an MCP server with one tool, `chart`, and no dependencies. It 
 }
 ```
 
-In Claude Code: `claude mcp add bareink -- npx -y -p bareink bareink-mcp`. Add `--locale pt-BR` for Portuguese words and Brazilian numbers, and `--width 480` to lay charts out narrower.
+In Claude Code: `claude mcp add bareink -- npx -y -p bareink bareink-mcp`. Add `--locale` with `es`, `fr`, `de` or `pt-BR` for words and numbers in that language, and `--width 480` to lay charts out narrower.
 
 ## In the browser, from a CDN
 
@@ -340,8 +340,8 @@ const html = `<figure>
 | `bareink` (`render`, `renderTable`) | 15.4 KB | 7.0 KB | 6.4 KB |
 | `bareink/route` | 1.5 KB | 0.7 KB | 0.6 KB |
 | `bareink/validate` | 3.4 KB | 1.5 KB | 1.3 KB |
-| `bareink/locale/en` | 1.4 KB | 0.7 KB | 0.5 KB |
-| `bareink/locale/pt-BR` | 1.5 KB | 0.7 KB | 0.7 KB |
+| `bareink/locale/en` | 1.4 KB | 0.7 KB | 0.6 KB |
+| `bareink/locale/pt-BR`, `es`, `fr`, `de` (each) | 1.5–1.7 KB | 0.8 KB | 0.7–0.8 KB |
 
 Measured with esbuild, minified, ES2020. CI fails when `render` or `route` grow past the budget in [`size-budget.json`](https://github.com/suguid/bareink/blob/main/size-budget.json).
 
