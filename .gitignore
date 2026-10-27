@@ -3,3 +3,4 @@ dist
 *.tsbuildinfo
 examples/out
 eval/results/
+site/out/

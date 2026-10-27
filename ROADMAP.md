@@ -14,11 +14,11 @@ bareink stays small on purpose. Every release passes the essence check below bef
 
 ## 0.2: reach people where they ask for charts
 
-- [ ] Evaluate with real models: questions run through several models with `schema.json`; measure how often `validate` passes on the first try and whether the form fits. Tune the schema descriptions from the failures.
-- [ ] A Claude skill, so "use bareink" works without integration code.
-- [ ] An MCP server with one `chart` tool, shipped in this package with no dependencies.
-- [ ] A public playground: edit the dataset, see the chart and the reason live.
-- [ ] Compatibility notes for Deno, Bun, Workers and browsers.
+- [x] Evaluate with real models: questions run through several models with `schema.json`; measure how often `validate` passes on the first try and whether the form fits. Tune the schema descriptions from the failures.
+- [x] A Claude skill, so "use bareink" works without integration code.
+- [x] An MCP server with one `chart` tool, shipped in this package with no dependencies.
+- [x] A public playground: edit the dataset, see the chart and the reason live.
+- [x] Compatibility notes for Deno, Bun, Workers and browsers.
 
 ## 0.3: gaps that show up in real use
 

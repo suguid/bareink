@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>bareink playground</title>
+<meta name="description" content="Describe what your numbers mean; bareink picks the chart and says why.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one header line with the thesis and live numbers, then a two-pane workbench (dataset in, decision and drawing out) that stacks on phones */
+:root {
+  --paper: #f3f4f6;
+  --surface: #ffffff;
+  --ink: #111216;
+  --ink-2: #4b4f58;
+  --muted: #7d818b;
+  --rule: #dcdfe5;
+  --accent: #2a78d6;
+  --accent-soft: #e4eefb;
+  --no: #f4ece6;
+  --no-ink: #9a4a1f;
+  --danger: #b3261e;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Public Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --bi-s1: #2a78d6; --bi-s2: #eb6834; --bi-s3: #4b4f58; --bi-ink: #111216; --bi-ink2: #4b4f58; --bi-muted: #7d818b;
+  --bi-grid: #e6e8ec; --bi-base: #c4c8d0; --bi-band: #eef0f3; --bi-quiet: #bfc3cb; --bi-surface: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e0f12; --surface: #17191d; --ink: #eceef2; --ink-2: #a9adb7; --muted: #7f838d; --rule: #2a2d33;
+    --accent: #4b93ea; --accent-soft: #1b2a3f; --no: #33241b; --no-ink: #f0a479; --danger: #ff8a80;
+    --bi-s1: #3987e5; --bi-s2: #d95926; --bi-s3: #a9adb7; --bi-ink: #eceef2; --bi-ink2: #a9adb7; --bi-muted: #7f838d;
+    --bi-grid: #262930; --bi-base: #3d414a; --bi-band: #1f2227; --bi-quiet: #4e525b; --bi-surface: #17191d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e0f12; --surface: #17191d; --ink: #eceef2; --ink-2: #a9adb7; --muted: #7f838d; --rule: #2a2d33;
+  --accent: #4b93ea; --accent-soft: #1b2a3f; --no: #33241b; --no-ink: #f0a479; --danger: #ff8a80;
+  --bi-s1: #3987e5; --bi-s2: #d95926; --bi-s3: #a9adb7; --bi-ink: #eceef2; --bi-ink2: #a9adb7; --bi-muted: #7f838d;
+  --bi-grid: #262930; --bi-base: #3d414a; --bi-band: #1f2227; --bi-quiet: #4e525b; --bi-surface: #17191d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink); font: 15px/1.5 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 22px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; justify-content: space-between; }
+h1 { font: 700 40px/1 var(--display); letter-spacing: -0.02em; margin: 0; }
+h1 span { color: var(--accent); }
+.thesis { margin: 0; color: var(--ink-2); font-size: 16px; flex: 1 1 280px; }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font: 500 13px var(--mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.stats b { color: var(--ink); font-weight: 500; }
+.bench { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { .bench { grid-template-columns: minmax(0, 1fr); } .out { order: -1; } textarea { min-height: 260px; } }
+.pane { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.label { font: 600 11px var(--body); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 500 13px var(--body); border: 1px solid var(--rule); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+.chip:hover { border-color: var(--ink-2); color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.chip:focus-visible, .seg button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.group { display: grid; gap: 7px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 7px; overflow: hidden; }
+.seg button { font: 500 13px var(--body); padding: 4px 11px; border: 0; background: transparent; color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--ink); }
+textarea { width: 100%; min-height: 420px; resize: vertical; font: 12.5px/1.55 var(--mono); color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 12px; tab-size: 2; }
+.error { margin: 0; color: var(--danger); font: 13px var(--mono); white-space: pre-wrap; }
+footer a { color: inherit; }
+.decision { display: grid; gap: 6px; }
+.form { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.form code { font: 500 14px var(--mono); padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.form code.no { background: var(--no); color: var(--no-ink); }
+.form .reason { color: var(--ink); font-size: 16px; }
+h2 { font: 500 22px/1.25 var(--display); margin: 0; text-wrap: balance; }
+.stage { min-width: 0; min-height: 120px; }
+.stage svg { display: block; }
+.notes { margin: 0; color: var(--muted); font-size: 13px; }
+.meta { border-top: 1px solid var(--rule); padding-top: 10px; display: flex; flex-wrap: wrap; gap: 4px 18px; font: 12.5px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+footer { color: var(--muted); font-size: 13px; max-width: 70ch; }
+footer code { font: 12.5px var(--mono); }
+@media (prefers-reduced-motion: no-preference) { .stage { transition: opacity 0.12s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>bare<span>ink</span></h1>
+    <p class="thesis">Describe what your numbers mean. It picks the honest chart, says why, and draws it as plain SVG. Sometimes the honest answer is no chart.</p>
+    <ul class="stats" aria-label="Package facts">
+      <li><b>7 KB</b> gzip</li>
+      <li><b>0</b> dependencies</li>
+      <li><b id="avg">…</b> per chart here</li>
+    </ul>
+  </header>
+
+  <div class="bench">
+    <section class="pane" aria-labelledby="in-label">
+      <div class="group">
+        <p class="label">Draws a chart</p>
+        <div class="chips" id="chips-chart"></div>
+      </div>
+      <div class="group">
+        <p class="label">Says no</p>
+        <div class="chips" id="chips-no"></div>
+      </div>
+      <div class="row">
+        <p class="label" id="in-label">Dataset</p>
+        <div class="seg" role="group" aria-label="Language">
+          <button type="button" id="lang-en" aria-pressed="true">English</button>
+          <button type="button" id="lang-pt" aria-pressed="false">Português</button>
+        </div>
+      </div>
+      <textarea id="json" spellcheck="false" aria-labelledby="in-label"></textarea>
+      <p class="error" id="error" hidden></p>
+    </section>
+
+    <section class="pane out" aria-live="polite">
+      <div class="decision">
+        <p class="label">The router decided</p>
+        <div class="form"><code id="form"></code><span class="reason" id="reason"></span></div>
+      </div>
+      <div class="row">
+        <h2 id="title"></h2>
+        <div class="seg" role="group" aria-label="View" id="view">
+          <button type="button" id="view-chart" aria-pressed="true">Chart</button>
+          <button type="button" id="view-table" aria-pressed="false">Table</button>
+        </div>
+      </div>
+      <div class="stage" id="stage"></div>
+      <p class="notes" id="notes" hidden></p>
+      <div class="meta"><span id="svg-size"></span><span id="time"></span><span id="code"></span></div>
+    </section>
+  </div>
+
+  <footer>
+    Every chart here is drawn live by the real package, inlined in this page: <code>render(dataset, { width })</code> returns an SVG string. Never a pie, never a dual axis, forecast hatched, columns from zero. Edit the JSON to try your own data. <a href="https://github.com/suguid/bareink">GitHub</a> · <a href="https://www.npmjs.com/package/bareink">npm</a>
+  </footer>
+</div>
+
+<script>/*BUNDLE*/</script>
+<script>
+(function () {
+  const EXAMPLES = /*EXAMPLES*/;
+  const B = window.bareink;
+  const $ = (id) => document.getElementById(id);
+  const CHARTS = ['columns', 'bars', 'line', 'diverging', 'waterfall', 'share'];
+  let lang = 'en', view = 'chart', current = 0, timer = 0, lastDs = null;
+
+  const opts = (width) => (lang === 'pt'
+    ? { width, locale: 'pt-BR', currency: 'BRL', messages: B.ptBR }
+    : { width, locale: 'en-US', currency: 'USD', messages: B.en });
+
+  function chips() {
+    for (const g of ['chart', 'no']) {
+      const box = $('chips-' + g);
+      box.innerHTML = '';
+      EXAMPLES.forEach((e, i) => {
+        if (e.group !== g) return;
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'chip'; b.textContent = e.name;
+        b.setAttribute('aria-pressed', String(i === current));
+        b.onclick = () => { current = i; $('json').value = JSON.stringify(e.ds, null, 2); chips(); draw(); };
+        box.appendChild(b);
+      });
+    }
+  }
+
+  function width() { return Math.max(260, Math.floor($('stage').clientWidth)); }
+
+  function draw() {
+    let ds;
+    try { ds = JSON.parse($('json').value); }
+    catch (err) { $('error').textContent = 'The JSON does not parse: ' + err.message; $('error').hidden = false; return; }
+    $('error').hidden = true;
+    const errors = B.validate(ds);
+    if (errors.length) { $('error').textContent = errors.join('\n'); $('error').hidden = false; return; }
+    const out = B.render(ds, opts(width()));
+    lastDs = ds;
+    const isChart = CHARTS.includes(out.form);
+    $('form').textContent = out.form;
+    $('form').className = isChart ? '' : 'no';
+    $('reason').textContent = out.reason;
+    $('title').textContent = ds.title || '';
+    $('view').hidden = !isChart;
+    const markup = isChart && view === 'table' ? B.renderTable(ds, opts(width())) : out.markup;
+    $('stage').innerHTML = markup;
+    $('notes').textContent = out.notes.join(' ');
+    $('notes').hidden = !out.notes.length;
+    $('svg-size').textContent = (isChart ? 'SVG ' : 'HTML ') + (markup.length / 1024).toFixed(1) + ' KB';
+    $('code').textContent = 'code: ' + out.code;
+    for (let i = 0; i < 5; i++) B.render(ds, opts(width()));
+    const n = 25, t = performance.now();
+    for (let i = 0; i < n; i++) B.render(ds, opts(width()));
+    $('time').textContent = Math.round(((performance.now() - t) * 1000) / n) + ' µs to render';
+  }
+
+  function bench() {
+    const sets = EXAMPLES.map((e) => e.ds), w = width();
+    for (const ds of sets) B.render(ds, { width: w });
+    const runs = 40, t = performance.now();
+    for (let i = 0; i < runs; i++) for (const ds of sets) B.render(ds, { width: w });
+    $('avg').textContent = '~' + Math.round(((performance.now() - t) * 1000) / (runs * sets.length)) + ' µs';
+  }
+
+  function setPressed(a, b, on) { $(a).setAttribute('aria-pressed', String(on)); $(b).setAttribute('aria-pressed', String(!on)); }
+  $('lang-en').onclick = () => { lang = 'en'; setPressed('lang-en', 'lang-pt', true); draw(); };
+  $('lang-pt').onclick = () => { lang = 'pt'; setPressed('lang-en', 'lang-pt', false); draw(); };
+  $('view-chart').onclick = () => { view = 'chart'; setPressed('view-chart', 'view-table', true); draw(); };
+  $('view-table').onclick = () => { view = 'table'; setPressed('view-chart', 'view-table', false); draw(); };
+  $('json').addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(draw, 150); });
+  $('json').addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    e.preventDefault();
+    const t = e.target, s = t.selectionStart;
+    t.value = t.value.slice(0, s) + '  ' + t.value.slice(t.selectionEnd);
+    t.selectionStart = t.selectionEnd = s + 2;
+  });
+
+  let lastW = 0;
+  new ResizeObserver(() => { const w = width(); if (w !== lastW && lastDs) { lastW = w; draw(); } }).observe($('stage'));
+
+  $('json').value = JSON.stringify(EXAMPLES[0].ds, null, 2);
+  chips();
+  draw();
+  setTimeout(bench, 50);
+})();
+</script>

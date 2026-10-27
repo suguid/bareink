@@ -4,6 +4,8 @@
 
 Describe what your numbers *mean*: a volume per month, a level over time, parts of a whole. `bareink` decides how to show them (which chart, or no chart at all), says why, and draws the result as a plain SVG string. Zero runtime dependencies, no DOM, under 0.1 ms per chart.
 
+**[Try it in the playground →](https://suguid.github.io/bareink/)**
+
 ```js
 import { render } from 'bareink'
 import { en } from 'bareink/locale/en'

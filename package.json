@@ -69,11 +69,12 @@
     "test": "node --test test/*.test.ts",
     "size": "node scripts/size.mjs",
     "example": "node examples/build.ts",
-    "readme": "node examples/readme.ts"
+    "readme": "node examples/readme.ts",
+    "site": "node site/build.ts"
   },
   "devDependencies": {
-    "esbuild": "0.28.2",
     "@types/node": "24.10.1",
+    "esbuild": "0.28.2",
     "typescript": "5.9.3"
   },
   "packageManager": "pnpm@11.13.1"
