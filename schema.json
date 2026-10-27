@@ -39,7 +39,7 @@
           "label": { "type": "string", "minLength": 1, "description": "Human name, e.g. 'Inflows'." },
           "unit": {
             "enum": ["currency", "percent", "count", "number", "text"],
-            "description": "currency: money in whole units, not thousands. percent: 0 to 100, not 0 to 1. count: people, items, orders. number: anything else. text: a non-numeric column, which makes a table."
+            "description": "currency: money in whole units; when the source is in thousands or millions, multiply (412 in thousands becomes 412000). percent: 0 to 100, not 0 to 1. count: people, items, orders. number: anything else. text: a non-numeric column, which makes a table."
           },
           "nature": {
             "enum": ["flow", "level", "signed"],

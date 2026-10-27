@@ -24,6 +24,7 @@ test('the public surface only grows on purpose', () => {
     './schema.json',
     './validate',
   ])
+  assert.deepEqual(pkg.bin, { 'bareink-mcp': './bin/bareink-mcp.js' })
 })
 
 test('never a pie, never a dual axis', () => {

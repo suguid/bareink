@@ -8,7 +8,7 @@
 export type DimensionKind = 'time' | 'category' | 'stage' | 'record'
 
 /**
- * - `currency`: money in whole units, not thousands. Formatted with the locale's currency.
+ * - `currency`: money in whole units; multiply figures given in thousands or millions. Formatted with the locale's currency.
  * - `percent`: 0 to 100, not 0 to 1.
  * - `count`: people, items, orders.
  * - `number`: anything else.

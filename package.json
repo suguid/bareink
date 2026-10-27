@@ -48,9 +48,13 @@
     "./package.json": "./package.json",
     "./iife": "./dist/bareink.iife.js"
   },
+  "bin": {
+    "bareink-mcp": "./bin/bareink-mcp.js"
+  },
   "unpkg": "./dist/bareink.iife.js",
   "jsdelivr": "./dist/bareink.iife.js",
   "files": [
+    "bin",
     "dist",
     "schema.json",
     "llms.txt",

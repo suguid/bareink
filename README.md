@@ -278,6 +278,26 @@ Two habits keep it honest and cheap:
 - When the numbers come from your own query, let the model describe the envelope (title, dimension, measures) and fill `rows` from the query result yourself. The model never retypes data.
 - Return `code`, not `reason`. The model already speaks the user's language and can say why a table was shown.
 
+Checked with Claude Haiku, Sonnet and Opus on [24 real questions](https://github.com/suguid/bareink/tree/main/eval): every call passed `validate` on the first try and got the expected form.
+
+### As a Claude skill
+
+[`skills/bareink`](https://github.com/suguid/bareink/tree/main/skills/bareink) teaches Claude to describe the numbers, validate, render from the CDN and explain the choice. Copy the folder into `~/.claude/skills/` for Claude Code, or upload it as a skill in Claude settings.
+
+### As an MCP server
+
+The package ships an MCP server with one tool, `chart`, and no dependencies. It validates each call, sends errors back so the model can fix them, and returns the decision followed by the SVG or HTML.
+
+```json
+{
+  "mcpServers": {
+    "bareink": { "command": "npx", "args": ["-y", "-p", "bareink", "bareink-mcp"] }
+  }
+}
+```
+
+In Claude Code: `claude mcp add bareink -- npx -y -p bareink bareink-mcp`. Add `--locale pt-BR` for Portuguese words and Brazilian numbers, and `--width 480` to lay charts out narrower.
+
 ## In the browser, from a CDN
 
 ```html
@@ -310,11 +330,13 @@ Where CSS variables are not available (PDF, rasterizers, images in a README), pa
 | `bareink/locale/en` | 1.4 KB | 0.7 KB | 0.5 KB |
 | `bareink/locale/pt-BR` | 1.5 KB | 0.7 KB | 0.7 KB |
 
-Measured with esbuild, minified, ES2020. CI fails when `render` or `route` grow past the budget in [`size-budget.json`](size-budget.json).
+Measured with esbuild, minified, ES2020. CI fails when `render` or `route` grow past the budget in [`size-budget.json`](https://github.com/suguid/bareink/blob/main/size-budget.json).
 
 ## Compatibility
 
 ESM with types, plus an IIFE for CDNs. ES2020, no DOM, no dependencies. Tested on Node 20.19, 22 and 24, Deno and Bun. Labels are escaped, so user or model text cannot inject markup.
+
+Beyond ES2020 the library only needs `Intl.NumberFormat`, which browsers, Cloudflare Workers and other edge runtimes provide; in Deno, import `npm:bareink`. Only the MCP server needs Node.
 
 ## License
 
