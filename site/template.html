@@ -9,40 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: one header line with the thesis and live numbers, then a two-pane workbench (dataset in, decision and drawing out) that stacks on phones */
-:root {
-  --paper: #f3f4f6;
-  --surface: #ffffff;
-  --ink: #111216;
-  --ink-2: #4b4f58;
-  --muted: #7d818b;
-  --rule: #dcdfe5;
-  --accent: #2a78d6;
-  --accent-soft: #e4eefb;
-  --no: #f4ece6;
-  --no-ink: #9a4a1f;
-  --danger: #b3261e;
-  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --body: "Public Sans", system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  --bi-s1: #2a78d6; --bi-s2: #eb6834; --bi-s3: #4b4f58; --bi-ink: #111216; --bi-ink2: #4b4f58; --bi-muted: #7d818b;
-  --bi-grid: #e6e8ec; --bi-base: #c4c8d0; --bi-band: #eef0f3; --bi-quiet: #bfc3cb; --bi-surface: #ffffff;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #0e0f12; --surface: #17191d; --ink: #eceef2; --ink-2: #a9adb7; --muted: #7f838d; --rule: #2a2d33;
-    --accent: #4b93ea; --accent-soft: #1b2a3f; --no: #33241b; --no-ink: #f0a479; --danger: #ff8a80;
-    --bi-s1: #3987e5; --bi-s2: #d95926; --bi-s3: #a9adb7; --bi-ink: #eceef2; --bi-ink2: #a9adb7; --bi-muted: #7f838d;
-    --bi-grid: #262930; --bi-base: #3d414a; --bi-band: #1f2227; --bi-quiet: #4e525b; --bi-surface: #17191d;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #0e0f12; --surface: #17191d; --ink: #eceef2; --ink-2: #a9adb7; --muted: #7f838d; --rule: #2a2d33;
-  --accent: #4b93ea; --accent-soft: #1b2a3f; --no: #33241b; --no-ink: #f0a479; --danger: #ff8a80;
-  --bi-s1: #3987e5; --bi-s2: #d95926; --bi-s3: #a9adb7; --bi-ink: #eceef2; --bi-ink2: #a9adb7; --bi-muted: #7f838d;
-  --bi-grid: #262930; --bi-base: #3d414a; --bi-band: #1f2227; --bi-quiet: #4e525b; --bi-surface: #17191d;
-  color-scheme: dark;
-}
+/*TOKENS*/
 * { box-sizing: border-box; }
 body {
   background: var(--paper); color: var(--ink); font: 15px/1.5 var(--body);
@@ -141,7 +108,7 @@ footer code { font: 12.5px var(--mono); }
   </div>
 
   <footer>
-    Every chart here is drawn live by the real package, inlined in this page: <code>render(dataset, { width })</code> returns an SVG string. Never a pie, never a dual axis, forecast hatched, columns from zero. Edit the JSON to try your own data. <a href="https://github.com/suguid/bareink">GitHub</a> · <a href="https://www.npmjs.com/package/bareink">npm</a>
+    Every chart here is drawn live by the real package, inlined in this page: <code>render(dataset, { width })</code> returns an SVG string. Never a pie, never a dual axis, forecast hatched, columns from zero. Edit the JSON to try your own data. <a href="reasons.html">Reason codes</a> · <a href="https://github.com/suguid/bareink">GitHub</a> · <a href="https://www.npmjs.com/package/bareink">npm</a>
   </footer>
 </div>
 

@@ -122,6 +122,8 @@ They are not configurable. That is the point.
 
 `code` is stable across versions; build on it. `reason` is the human sentence for that code, present only when you pass a locale.
 
+Every code with a live example: **[the reason codes page](https://suguid.github.io/bareink/reasons.html)**.
+
 ### Why did I get a table?
 
 Because a chart would have misled. Every result carries a `code`; look it up above, or pass a locale to read the sentence. The usual ones:
@@ -366,6 +368,18 @@ Measured with esbuild, minified, ES2020. CI fails when `render` or `route` grow 
 ESM with types, plus an IIFE for CDNs. ES2020, no DOM, no dependencies. Tested on Node 20.19, 22 and 24, Deno and Bun. Labels are escaped, so user or model text cannot inject markup.
 
 Beyond ES2020 the library only needs `Intl.NumberFormat`, which browsers, Cloudflare Workers and other edge runtimes provide; in Deno, import `npm:bareink`. Only the MCP server needs Node.
+
+## Versioning
+
+bareink follows semver, and some of its output is a contract you can build on:
+
+- **Reason codes** are never renamed, removed or given a new meaning. New codes may appear in a minor release; treat an unknown code like a table.
+- **Forms** (`columns`, `bars`, `line`, `diverging`, `waterfall`, `share`, `kpi`, `table`) are only added in a minor release, never removed.
+- **`schema.json` v1** only grows: new fields are optional, required fields and enum values stay.
+- **Which form a dataset gets** may change in a minor release when a rule improves, always with a line in the changelog. Within a version, `route` is deterministic.
+- **The markup** is not a contract: the SVG may change in any release to draw better. Style it through the `--bi-*` variables, not by its structure.
+
+Anything deprecated keeps working for at least one minor release and six months, with a note in the changelog and in the types, and is removed only in a major release. Tests in `test/contract.test.ts` enforce the first three rules.
 
 ## License
 

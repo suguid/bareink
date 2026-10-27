@@ -30,9 +30,9 @@ bareink stays small on purpose. Every release passes the essence check below bef
 
 ## 1.0: stability as a promise
 
-- [ ] Reason codes and schema v1 frozen, with a written versioning and deprecation policy.
+- [x] Reason codes and schema v1 frozen, with a written versioning and deprecation policy (README, enforced by `test/contract.test.ts`).
 - [ ] Three projects outside this one using it in production.
-- [ ] A short documentation site: the reason table with live examples, and the framework recipes.
+- [x] A short documentation site: [every reason code with a live example](https://suguid.github.io/bareink/reasons.html) next to the playground; the framework recipes stay in the README.
 
 ## Not on the roadmap, on purpose
 

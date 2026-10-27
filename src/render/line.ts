@@ -29,7 +29,7 @@ export function line(ctx: Ctx): Markup {
   const { domain, fromZero } = lineDomain(rows.flatMap((r) => ms.map((mm) => r[mm.key]).filter(isNum)).concat(ref ? [ref.value] : []))
   const tick = (v: number) => fmt.tick(unit, v)
   const probe = linear(domain, [0, 1])
-  const m = { t: 16, r: Math.min(W * 0.3, 16 + Math.max(...ms.map((_, k) => textWidth(endText(k), 12)))), b: 28, l: axisRoom(probe, tick) }
+  const m = { t: 16, r: Math.min(W * 0.3, 16 + Math.max(...ms.map((_, k) => textWidth(endText(k), 13)))), b: 28, l: axisRoom(probe, tick) }
   const y = linear(domain, [H - m.b, m.t])
   const x = point(rows.length, [m.l, W - m.r])
   const ff = ctx.ff
@@ -78,7 +78,7 @@ export function line(ctx: Ctx): Markup {
         ff != null && el('path', { d: path(mm.key, ff, rows.length), fill: 'none', stroke: ctx.c(t), 'stroke-width': 2, 'stroke-dasharray': '4 4' }),
         at >= 0 && [
           el('circle', { cx: x(at), cy: y(Number(rows[at]![mm.key])), r: 4, fill: ctx.c(t), stroke: ctx.c('surface'), 'stroke-width': 2 }),
-          text(x(at) + 9, ends[j]! + 4, fit(endText(j), W - x(at) - 9, 12), { fill: ctx.c('ink'), 'font-size': 12, 'font-weight': 600 }),
+          text(x(at) + 9, ends[j]! + 4, fit(endText(j), W - x(at) - 9, 13), { fill: ctx.c('ink'), 'font-size': 12, 'font-weight': 600 }),
         ],
       ]
     }),
