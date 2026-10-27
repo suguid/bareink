@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0
+
+Gaps that show up in real use. The core grew 95 bytes, all of them layout fixes.
+
+- Labels never overlap at phone widths: the forecast label sits above highlighted values, highlighted values stay inside the chart and clear of the axis, edge labels shrink to the room they have, and highlights that would collide are skipped. The tests now check every chart for overlapping text at 320 and 375 px.
+- Text meets WCAG AA contrast in both palettes. axe-core found the light muted gray at 3.6:1; it is now 5.4:1, and a test checks every text color.
+- `bareink/locale/es`, `bareink/locale/fr` and `bareink/locale/de`, each checked for every reason code. The MCP server takes any of them with `--locale`.
+- README recipes for an accessible chart (the table one click away, no JavaScript) and for PNG output with resvg.
+- Annotations were considered and deferred: they would sit in `render` for every user while few need them.
+
 ## 0.2.0
 
 Reach people where they ask for charts. The core did not grow a byte.

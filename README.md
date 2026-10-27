@@ -303,7 +303,7 @@ In Claude Code: `claude mcp add bareink -- npx -y -p bareink bareink-mcp`. Add `
 ## In the browser, from a CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/bareink@0.2.0/dist/bareink.iife.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bareink@0.3.0/dist/bareink.iife.min.js"></script>
 <script>
   document.querySelector('#chart').innerHTML = bareink.render(dataset, { messages: bareink.en }).markup
 </script>
