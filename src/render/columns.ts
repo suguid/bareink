@@ -1,7 +1,7 @@
 import { axisRoom, forecastBand, frame, hatch, hatches, hit, labelEvery, legend, mark, refLine, SERIES, show, xLabel, yAxis, lab, type Ctx, type Key, type Token } from '../context.ts'
 import { isNum, num } from '../route.ts'
 import { band, linear, nice } from '../scale.ts'
-import { BOTTOM, box, el, TOP, type Markup } from '../svg.ts'
+import { BOTTOM, box, el, TOP, textWidth, type Markup } from '../svg.ts'
 import type { Measure, Row } from '../types.ts'
 
 export function columns(ctx: Ctx, signed = false): Markup {
@@ -32,6 +32,13 @@ export function columns(ctx: Ctx, signed = false): Markup {
     x.step,
   )
   const y0 = y(0)
+  let edge = 0
+  const spot = (cx: number, cy: number, s: string) => {
+    const half = textWidth(s, 12) / 2
+    if (cx - half < edge) return
+    edge = cx + half + 4
+    return mark(ctx, cx, cy, s, m.l)
+  }
 
   return frame(
     ctx,
@@ -76,7 +83,7 @@ export function columns(ctx: Ctx, signed = false): Markup {
           ]
         }),
         i % every === 0 && xLabel(ctx, cx, H - 8, label, x.step * every - 4),
-        ds.highlight?.includes(i) && ms.length === 1 && isNum(r[ms[0]!.key]) && mark(ctx, cx, top < 0 ? y(top) + 15 : y(top) - 7, show(ctx, unit, top, signed), m.l),
+        ds.highlight?.includes(i) && ms.length === 1 && isNum(r[ms[0]!.key]) && spot(cx, top < 0 ? y(top) + 15 : y(top) - 7, show(ctx, unit, top, signed)),
         hit(x(i) - gap, m.t, x.step, H - m.b - m.t, i, tip),
       ]
     }),
