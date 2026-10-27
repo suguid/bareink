@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- The label at the end of a line reserves room for its bold text, so it is no longer clipped at the right edge.
+- README: a versioning policy (what is a contract and what is not) and a link to the reason codes page, where every code is drawn live.
+
 ## 0.3.0
 
 Gaps that show up in real use. The core grew 95 bytes, all of them layout fixes.
