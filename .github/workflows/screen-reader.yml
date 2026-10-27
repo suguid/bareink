@@ -27,6 +27,7 @@ jobs:
       - run: npx playwright install chromium
         working-directory: a11y
       - run: npx -y --ignore-scripts=false @guidepup/setup@0.29.3 install
+        working-directory: a11y
       - run: npx playwright test
         working-directory: a11y
       - uses: actions/upload-artifact@v7
