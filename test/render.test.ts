@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { cssVariables, dark, render, renderTable } from '../src/index.ts'
+import { cssVariables, dark, light, render, renderTable } from '../src/index.ts'
 import { ptBR } from '../src/locale/pt-BR.ts'
 import { cashflow, expenses, people, pnl, result, runway, ticket } from './fixtures.ts'
 
@@ -112,4 +112,20 @@ test('a single-series chart has no legend', () => {
 test('a locale alone sets number formatting, and options still win', () => {
   assert.match(render(cashflow, { messages: ptBR }).markup, /R\$/)
   assert.match(render(cashflow, { messages: ptBR, currency: 'EUR' }).markup, /€/)
+})
+
+test('text colors meet WCAG AA on the chart background, in both palettes', () => {
+  const lum = (hex: string) => {
+    const [r, g, b] = [1, 3, 5].map((i) => {
+      const v = parseInt(hex.slice(i, i + 2), 16) / 255
+      return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+    })
+    return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
+  }
+  const ratio = (a: string, b: string) => {
+    const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x)
+    return (hi! + 0.05) / (lo! + 0.05)
+  }
+  for (const p of [light, dark])
+    for (const t of ['ink', 'ink2', 'muted'] as const) assert.ok(ratio(p[t], p.band) >= 4.5, `${t} ${p[t]} on ${p.band}`)
 })

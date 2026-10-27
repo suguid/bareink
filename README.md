@@ -322,6 +322,17 @@ const css = `@media (prefers-color-scheme: dark) { ${cssVariables(dark)} }`
 
 Where CSS variables are not available (PDF, rasterizers, images in a README), pass `inlineColors: true`.
 
+## Accessibility
+
+Every chart is an SVG with `role="img"` and the dataset's `title` as its accessible name, so the title should state the takeaway. Text meets WCAG AA contrast in both palettes. For the numbers themselves, put the table one click away; `<details>` needs no JavaScript:
+
+```js
+const html = `<figure>
+  ${render(ds).markup}
+  <details><summary>Show the data</summary>${renderTable(ds)}</details>
+</figure>`
+```
+
 ## Size
 
 | Entry | min | gzip | brotli |

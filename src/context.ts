@@ -10,7 +10,7 @@ export const light = {
   s3: '#52514e',
   ink: '#0b0b0b',
   ink2: '#52514e',
-  muted: '#898781',
+  muted: '#6b6a64',
   grid: '#e7e6e0',
   base: '#c3c2b7',
   band: '#efeee9',
