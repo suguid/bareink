@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Published from GitHub Actions with npm trusted publishing, so every release carries a signed provenance statement linking it to its commit.
+- The IIFE build ships readable instead of minified. jsDelivr serves a minified copy at `dist/bareink.iife.min.js`.
+
 ## 0.1.0
 
 First release.

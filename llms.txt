@@ -4,7 +4,7 @@
 
 ## Use
 
-- Install: `npm install bareink`. CDN: `https://cdn.jsdelivr.net/npm/bareink@0.1.0/dist/bareink.iife.js` (global `bareink`).
+- Install: `npm install bareink`. CDN: `https://cdn.jsdelivr.net/npm/bareink@0.1.1/dist/bareink.iife.min.js` (global `bareink`).
 - `render(dataset, { width, messages, locale, currency })` returns `{ form, code, reason, markup, notes }`. `markup` is an SVG string for charts, HTML for tables and number cards.
 - `validate(dataset)` from `bareink/validate` returns readable errors; call it before `render` on model output and send the errors back to the model.
 - `route(dataset)` from `bareink/route` returns only the decision.

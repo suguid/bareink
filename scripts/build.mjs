@@ -16,7 +16,7 @@ await build({
     loader: 'ts',
   },
   bundle: true,
-  minify: true,
+  legalComments: 'none',
   format: 'iife',
   globalName: 'bareink',
   target: 'es2020',

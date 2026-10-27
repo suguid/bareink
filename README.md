@@ -281,13 +281,13 @@ Two habits keep it honest and cheap:
 ## In the browser, from a CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/bareink@0.1.0/dist/bareink.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bareink@0.1.1/dist/bareink.iife.min.js"></script>
 <script>
   document.querySelector('#chart').innerHTML = bareink.render(dataset, { messages: bareink.en }).markup
 </script>
 ```
 
-The IIFE build includes `validate`, `en` and `ptBR`.
+The IIFE build includes `validate`, `en` and `ptBR`. The package ships it readable; jsDelivr minifies it when you ask for `.min.js`.
 
 ## Theming
 
