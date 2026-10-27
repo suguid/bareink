@@ -42,7 +42,8 @@ test('NVDA reads every chart, its bars and its tables', async ({ page: tab, nvda
   console.log(JSON.stringify(heard, null, 2))
 
   const all = (prefix: string) => Object.entries(heard).filter(([k]) => k.startsWith(prefix)).flatMap(([, v]) => v).join('\n')
-  for (const title of charts) expect(all('graphic'), `graphic "${title}"`).toContain(title)
+  const spoken = (title: string) => title.replace(/%/g, ' percent')
+  for (const title of charts) expect(all('graphic'), `graphic "${title}"`).toContain(spoken(title))
   for (const [step, said] of Object.entries(heard)) if (step.startsWith('tab ')) expect(said.join(' ').trim(), `${step} says something`).not.toBe('')
-  for (const title of tables) expect(all('table'), `table "${title}"`).toContain(title)
+  for (const title of tables) expect(all('table'), `table "${title}"`).toContain(spoken(title))
 })
