@@ -6,6 +6,7 @@ import { cashflow, expenses, people, pnl, result, ticket } from '../test/fixture
 
 const root = new URL('../', import.meta.url)
 const img = new URL('docs/img/', root)
+const IMG = 'https://raw.githubusercontent.com/suguid/bareink/main/docs/img/'
 mkdirSync(img, { recursive: true })
 
 const charts: [string, Dataset][] = [
@@ -77,8 +78,8 @@ const gallery = charts.map(([name, ds]) => {
   const { reason } = route(ds, en)
   return [
     `<picture>`,
-    `  <source media="(prefers-color-scheme: dark)" srcset="docs/img/${name}-dark.svg">`,
-    `  <img alt="${ds.title}" src="docs/img/${name}-light.svg" width="640">`,
+    `  <source media="(prefers-color-scheme: dark)" srcset="${IMG}${name}-dark.svg">`,
+    `  <img alt="${ds.title}" src="${IMG}${name}-light.svg" width="640">`,
     `</picture>`,
     ``,
     `**\`${name}\`**: ${reason}`,

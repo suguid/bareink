@@ -1,7 +1,7 @@
 {
   "name": "bareink",
   "version": "0.1.0",
-  "description": "Charts that tell the bare truth \u2014 a deterministic chart router and SVG renderer in a few kilobytes, with zero dependencies.",
+  "description": "Charts that tell the bare truth — a deterministic chart router and SVG renderer in a few kilobytes, with zero dependencies.",
   "keywords": [
     "chart",
     "svg",
@@ -12,6 +12,15 @@
     "chart-recommendation"
   ],
   "license": "MIT",
+  "author": "Dhan Sugui",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suguid/bareink.git"
+  },
+  "homepage": "https://github.com/suguid/bareink#readme",
+  "bugs": {
+    "url": "https://github.com/suguid/bareink/issues"
+  },
   "type": "module",
   "sideEffects": false,
   "exports": {

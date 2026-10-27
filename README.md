@@ -40,43 +40,43 @@ Every chart below is a plain SVG string from `render()`, written to a file by [`
 
 <!-- showcase:start -->
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/columns-dark.svg">
-  <img alt="Inflows and outflows move together, near $40k a month" src="docs/img/columns-light.svg" width="640">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/columns-dark.svg">
+  <img alt="Inflows and outflows move together, near $40k a month" src="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/columns-light.svg" width="640">
 </picture>
 
 **`columns`**: A volume per period: columns from zero.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/diverging-dark.svg">
-  <img alt="March carried the year" src="docs/img/diverging-light.svg" width="640">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/diverging-dark.svg">
+  <img alt="March carried the year" src="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/diverging-light.svg" width="640">
 </picture>
 
 **`diverging`**: Values below zero over time: the sign matters as much as the size.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/bars-dark.svg">
-  <img alt="Three categories take 71% of outflows" src="docs/img/bars-light.svg" width="640">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/bars-dark.svg">
+  <img alt="Three categories take 71% of outflows" src="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/bars-light.svg" width="640">
 </picture>
 
 **`bars`**: Categories: bars, largest first.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/line-dark.svg">
-  <img alt="Average ticket rose 16% in six months" src="docs/img/line-light.svg" width="640">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/line-dark.svg">
+  <img alt="Average ticket rose 16% in six months" src="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/line-light.svg" width="640">
 </picture>
 
 **`line`**: A level over time: line.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/waterfall-dark.svg">
-  <img alt="Of every $100 in, $10 is operating result" src="docs/img/waterfall-light.svg" width="640">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/waterfall-dark.svg">
+  <img alt="Of every $100 in, $10 is operating result" src="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/waterfall-light.svg" width="640">
 </picture>
 
 **`waterfall`**: Steps from a total to a result: waterfall.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/share-dark.svg">
-  <img alt="People take 29% of revenue, 43% with owners" src="docs/img/share-light.svg" width="640">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/share-dark.svg">
+  <img alt="People take 29% of revenue, 43% with owners" src="https://raw.githubusercontent.com/suguid/bareink/main/docs/img/share-light.svg" width="640">
 </picture>
 
 **`share`**: Up to 3 parts of a whole: one 0–100% bar, never a pie.
@@ -157,7 +157,7 @@ Every public type is documented, so your editor explains `nature`, `unit` and `k
 
 ### The dataset
 
-The full contract, with descriptions written for language models, is [`schema.json`](schema.json) (also exported as `bareink/schema.json`).
+The full contract, with descriptions written for language models, is [`schema.json`](https://github.com/suguid/bareink/blob/main/schema.json) (also exported as `bareink/schema.json`).
 
 | Field | Meaning |
 |---|---|
