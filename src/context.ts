@@ -115,7 +115,7 @@ export function xLabel(ctx: Ctx, x: number, y: number, s: string, room: number):
 }
 
 export function hit(x: number, y: number, w: number, h: number, i: number, tip: string): Markup {
-  return el('rect', { x, y, width: Math.max(w, 1), height: Math.max(h, 1), fill: 'transparent', tabindex: 0, 'data-i': i }, el('title', {}, tip))
+  return el('rect', { x, y, width: Math.max(w, 1), height: Math.max(h, 1), fill: 'transparent', 'data-i': i }, el('title', {}, tip))
 }
 
 export function yAxis(ctx: Ctx, y: Linear, x0: number, x1: number, fmt: (v: number) => string, baseAt: number): Child {

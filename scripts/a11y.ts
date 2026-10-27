@@ -83,6 +83,8 @@ try {
   }
   const focusable = live.filter((n) => n.properties?.some((p) => p.name === 'focusable' && p.value.value))
   for (const n of focusable) if (role(n) !== 'RootWebArea' && !name(n).trim()) errors.push(`a focusable ${role(n)} has no name`)
+  for (const img of live.filter((n) => role(n) === 'image'))
+    if (below(img).some((n) => focusable.includes(n))) errors.push(`image "${name(img)}" holds focusable parts, which NVDA reads as silent Tab stops`)
   const tables = live.filter((n) => role(n) === 'table')
   for (const t of tables) if (!below(t).some((n) => role(n) === 'columnheader')) errors.push(`table "${name(t)}" has no column headers`)
 
