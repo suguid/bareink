@@ -101,13 +101,17 @@ export function text(x: number, y: number, s: string, a: Record<string, string |
   return el('text', { x, y, ...a }, s)
 }
 
-export const mark = (ctx: Ctx, x: number, y: number, s: string): Markup =>
-  text(x, y, s, { 'text-anchor': 'middle', fill: ctx.c('ink'), 'font-size': 11.5, 'font-weight': 600 })
+const inside = (ctx: Ctx, x: number, s: string, size: number, lo = 0): number => {
+  const half = textWidth(s, size) / 2
+  return Math.min(Math.max(x, lo + half), ctx.width - half)
+}
+
+export const mark = (ctx: Ctx, x: number, y: number, s: string, lo?: number): Markup =>
+  text(inside(ctx, x, s, 12, lo), y, s, { 'text-anchor': 'middle', fill: ctx.c('ink'), 'font-size': 11.5, 'font-weight': 600 })
 
 export function xLabel(ctx: Ctx, x: number, y: number, s: string, room: number): Markup {
-  s = fit(s, room, 11)
-  const half = textWidth(s, 11) / 2
-  return text(Math.min(Math.max(x, half), ctx.width - half), y, s, { 'text-anchor': 'middle', fill: ctx.c('ink2') })
+  s = fit(s, Math.min(room, room / 2 + Math.min(x, ctx.width - x)), 11)
+  return text(inside(ctx, x, s, 11), y, s, { 'text-anchor': 'middle', fill: ctx.c('ink2') })
 }
 
 export function hit(x: number, y: number, w: number, h: number, i: number, tip: string): Markup {

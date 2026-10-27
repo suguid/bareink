@@ -31,13 +31,33 @@ function textInside(markup: string, width: number): void {
   }
 }
 
-function check(name: string, ds: Dataset, widths = [200, 360, 640, 2000]): void {
+function noOverlap(markup: string): void {
+  const boxes = [...markup.matchAll(/<text x="(-?[\d.]+)" y="(-?[\d.]+)"([^>]*)>([^<]*)</g)].map((m) => {
+    const size = Number(/font-size="([\d.]+)"/.exec(m[3]!)?.[1] ?? 11)
+    const w = textWidth(m[4]!.replace(/&#\d+;/g, '_'), size)
+    const anchor = /text-anchor="(\w+)"/.exec(m[3]!)?.[1] ?? 'start'
+    const x = Number(m[1])
+    const left = anchor === 'end' ? x - w : anchor === 'middle' ? x - w / 2 : x
+    return { label: m[4], left, right: left + w, y: Number(m[2]), size }
+  })
+  for (const [i, a] of boxes.entries())
+    for (const b of boxes.slice(i + 1))
+      assert.ok(
+        Math.abs(a.y - b.y) >= Math.min(a.size, b.size) || a.right <= b.left + 1 || b.right <= a.left + 1,
+        `"${a.label}" overlaps "${b.label}"`,
+      )
+}
+
+function check(name: string, ds: Dataset, widths = [200, 320, 375, 640, 2000]): void {
   test(`messy: ${name}`, () => {
     for (const width of widths) {
       const r = render(ds, { width })
       assert.doesNotMatch(r.markup, /NaN|Infinity|undefined|null/, `${r.form} at ${width}px`)
       wellFormed(r.markup)
-      if (r.markup.startsWith('<svg')) textInside(r.markup, Math.max(200, width))
+      if (r.markup.startsWith('<svg')) {
+        textInside(r.markup, Math.max(200, width))
+        if (width >= 320) noOverlap(r.markup)
+      }
     }
   })
 }
@@ -66,3 +86,4 @@ check('share over 100%', series(people, (r) => ({ ...r, pct: 60 })))
 check('waterfall with no totals', { ...pnl, totalRows: [] })
 check('unicode labels', series(expenses, (r, i) => ({ ...r, category: ['Café & Ação', '日本語のラベル', 'עברית', 'Zoë "quoted"', '<b>', 'emoji 📈'][i] })))
 check('duplicate labels', series(expenses, (r) => ({ ...r, category: 'Same' })))
+check('forecast with the last column highlighted', { ...cashflow, measures: [cashflow.measures[0]!], highlight: [cashflow.rows.length - 1] })
