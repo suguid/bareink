@@ -322,6 +322,22 @@ const css = `@media (prefers-color-scheme: dark) { ${cssVariables(dark)} }`
 
 Where CSS variables are not available (PDF, rasterizers, images in a README), pass `inlineColors: true`.
 
+## As an image
+
+For e-mail, chat or PDF, rasterize the SVG with any renderer you already trust. With [`@resvg/resvg-js`](https://www.npmjs.com/package/@resvg/resvg-js):
+
+```js
+import { Resvg } from '@resvg/resvg-js'
+import { render } from 'bareink'
+
+const { form, markup } = render(dataset, { width: 640, inlineColors: true })
+if (form !== 'table' && form !== 'kpi') {
+  const png = new Resvg(markup, { background: '#fff', fitTo: { mode: 'zoom', value: 2 }, font: { defaultFontFamily: 'DejaVu Sans' } }).render().asPng()
+}
+```
+
+`inlineColors` matters here: rasterizers do not resolve CSS variables. Tables and number cards are HTML, so check `form` first.
+
 ## Accessibility
 
 Every chart is an SVG with `role="img"` and the dataset's `title` as its accessible name, so the title should state the takeaway. Text meets WCAG AA contrast in both palettes. For the numbers themselves, put the table one click away; `<details>` needs no JavaScript:

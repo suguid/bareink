@@ -22,11 +22,11 @@ bareink stays small on purpose. Every release passes the essence check below bef
 
 ## 0.3: gaps that show up in real use
 
-- [ ] Phones: labels checked at 320 px.
-- [ ] Accessibility: screen reader pass; the table behind every chart one click away, without JavaScript.
-- [ ] More locales (`es`, `fr`, `de`), each checked for every reason code.
-- [ ] PNG output as a recipe, not a dependency.
-- [ ] Annotations: mark an event on a period ("launch", "price change"), if it fits the budget.
+- [x] Phones: labels checked at 320 px.
+- [x] Accessibility: WCAG AA contrast checked by axe-core and a test; the table one click away, without JavaScript. A pass with a real screen reader is still open.
+- [x] More locales (`es`, `fr`, `de`), each checked for every reason code.
+- [x] PNG output as a recipe, not a dependency.
+- [ ] ~~Annotations~~: deferred by the essence check. Drawing them would sit in `render` for every user while few need them, and `highlight` plus `reference` already cover the common cases. It comes back with a real case that those two cannot express.
 
 ## 1.0: stability as a promise
 
