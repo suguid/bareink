@@ -23,7 +23,7 @@ bareink stays small on purpose. Every release passes the essence check below bef
 ## 0.3: gaps that show up in real use
 
 - [x] Phones: labels checked at 320 px.
-- [x] Accessibility: WCAG AA contrast checked by axe-core and a test; the table one click away, without JavaScript. A pass with a real screen reader is still open.
+- [x] Accessibility: WCAG AA contrast checked by axe-core and a test; the table one click away, without JavaScript; Chrome's accessibility tree checked in CI, and NVDA driven on Windows at every release.
 - [x] More locales (`es`, `fr`, `de`), each checked for every reason code.
 - [x] PNG output as a recipe, not a dependency.
 - [ ] ~~Annotations~~: deferred by the essence check. Drawing them would sit in `render` for every user while few need them, and `highlight` plus `reference` already cover the common cases. It comes back with a real case that those two cannot express.

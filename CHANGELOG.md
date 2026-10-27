@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2
+
+- Bars and columns are no longer Tab stops. NVDA, driven on a Windows runner, said nothing on each of them: focusable parts inside an image are silent, and the native tooltip only shows on hover. A chart is now one stop that reads its title, and the numbers are in the table one click away, which NVDA reads with its caption, size and headers.
+- Every release now runs two screen reader checks: Chrome's accessibility tree in CI, and NVDA itself on Windows, with what it said kept as an artifact.
+
 ## 0.3.1
 
 - The label at the end of a line reserves room for its bold text, so it is no longer clipped at the right edge.
