@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0
+
+Reach people where they ask for charts. The core did not grow a byte.
+
+- `bareink-mcp`: an MCP server with one `chart` tool, shipped in the package with no dependencies. It validates each call, sends errors back to the model, and returns the decision with the SVG or HTML.
+- A Claude skill in `skills/bareink`.
+- A model evaluation in `eval/`: 24 questions, scored for a valid dataset, the expected form and the query's exact numbers. Claude Haiku, Sonnet and Opus pass all 24.
+- `schema.json`: `currency` now tells models to multiply figures given in thousands or millions, the one miss the evaluation found.
+- A public playground at https://suguid.github.io/bareink/.
+
 ## 0.1.1
 
 - Published from GitHub Actions with npm trusted publishing, so every release carries a signed provenance statement linking it to its commit.

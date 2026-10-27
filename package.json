@@ -1,6 +1,6 @@
 {
   "name": "bareink",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Charts that tell the bare truth — a deterministic chart router and SVG renderer in a few kilobytes, with zero dependencies.",
   "keywords": [
     "chart",
